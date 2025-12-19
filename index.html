@@ -2,139 +2,143 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <title>ふらcafe LIVE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ふらcafe LIVE HUB</title>
-
   <style>
+    :root {
+      --bg-main: radial-gradient(circle at top, #1e293b, #020617);
+      --card-bg: linear-gradient(180deg, #020617, #020617dd);
+    }
+    body.night {
+      --bg-main: radial-gradient(circle at top, #020617, #000);
+      --card-bg: linear-gradient(180deg, #020617, #000);
+    }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #1e293b, #020617);
+      font-family: system-ui, sans-serif;
+      background: var(--bg-main);
       color: #e5e7eb;
       margin: 0;
       padding: 24px;
+      transition: background .6s;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 28px;
-      letter-spacing: 0.12em;
-    }
+    h1 { text-align: center; margin-bottom: 32px; letter-spacing: .08em; }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
     }
     .card {
-      background: linear-gradient(180deg, #020617, #020617cc);
       border-radius: 20px;
-      padding: 16px;
+      padding: 18px;
+      background: var(--card-bg);
+      box-shadow: 0 15px 40px rgba(0,0,0,.5);
+      text-align: center;
+      transition: transform .3s, box-shadow .3s;
       position: relative;
       overflow: hidden;
-      transition: transform .3s ease, box-shadow .3s ease;
     }
     .card.live {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(239,68,68,.9);
-      animation: pulse 1.6s infinite;
+      grid-column: span 2;
     }
+    .card::after {
+      content: '☾';
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      opacity: .15;
+      font-size: 32px;
+    }
+    .card a { color: inherit; text-decoration: none; }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,.7); }
+
+    .icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      margin: 0 auto 12px; object-fit: cover; background: #0f172a;
+    }
+    .name { font-size: 18px; font-weight: bold; margin-bottom: 6px; }
+    .status { font-size: 14px; opacity: .85; }
+
+    .live { outline: 2px solid #f43f5e; animation: pulse 1.4s infinite; }
     @keyframes pulse {
-      0% { box-shadow: 0 0 20px rgba(239,68,68,.5); }
-      50% { box-shadow: 0 0 50px rgba(239,68,68,1); }
-      100% { box-shadow: 0 0 20px rgba(239,68,68,.5); }
+      0% { box-shadow: 0 0 0 0 rgba(244,63,94,.7); }
+      70% { box-shadow: 0 0 0 14px rgba(244,63,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(244,63,94,0); }
     }
-    .title {
-      font-weight: 700;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .badge {
-      background: #334155;
-      border-radius: 999px;
-      padding: 3px 12px;
-      font-size: 12px;
-    }
-    .badge.live {
-      background: #ef4444;
-      animation: blink 1s infinite;
-    }
-    @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: .4; }
-      100% { opacity: 1; }
-    }
-    iframe {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border: none;
-      border-radius: 14px;
-      background: #020617;
-    }
-    .offline {
-      opacity: 0.45;
+    .badge { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px; font-size: 12px; letter-spacing: .08em; }
+    .on { background: #f43f5e; }
+    .off { background: #334155; }
+
+    .standby {
+      grid-column: 1 / -1;
       text-align: center;
-      padding: 42px 0;
-      font-size: 14px;
-    }
-    footer {
-      margin-top: 28px;
-      text-align: center;
-      font-size: 12px;
-      opacity: .6;
+      opacity: .8;
+      padding: 40px 0;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
+  <h1>☕ ふらcafe LIVE ☾</h1>
+  <div class="grid" id="grid"></div>
 
-<h1>☕ ふらcafe 配信ハブ ☕</h1>
+  <script>
+    const members = [
+      { name: '若凪', link: 'https://www.twitch.tv/wakanagi', api: 'https://decapi.me/twitch/uptime/wakanagi', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image.png' },
+      { name: '柚茶', link: 'https://www.twitch.tv/yuzucha08', api: 'https://decapi.me/twitch/uptime/yuzucha08', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image.png' },
+      { name: 'Lily00', link: 'https://www.twitch.tv/lily00_flca', api: 'https://decapi.me/twitch/uptime/lily00_flca', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image.png' },
+      { name: 'とるま', link: 'https://www.twitch.tv/tourma_flca', api: 'https://decapi.me/twitch/uptime/tourma_flca', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image.png' },
+      { name: 'ふらcafe YouTube', link: 'https://www.youtube.com/@flatcafe_games/live', api: 'https://decapi.me/youtube/uptime/UCAsCx41YE4mEIBCIAGOzFfA', icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj' }
+    ];
 
-<div class="grid" id="grid"></div>
+    const grid = document.getElementById('grid');
 
-<script>
-const YOUTUBE_CHANNEL_ID = "UCAsCx41YE4mEIBCIAGOzFfA";
-const TWITCH_PARENT = location.hostname;
+    async function checkLive(m) {
+      try {
+        const r = await fetch(m.api);
+        const t = await r.text();
+        return !t.toLowerCase().includes('offline');
+      } catch { return false; }
+    }
 
-const streams = [
-  { name: "フラcafe YouTube", type: "youtube" },
-  { name: "若凪", type: "twitch", channel: "wakanagi" },
-  { name: "柚茶", type: "twitch", channel: "yuzucha08" },
-  { name: "Lily00", type: "twitch", channel: "lily00_flca" },
-  { name: "とるま", type: "twitch", channel: "tourma_flca" }
-];
+    function checkNightMode() {
+      const h = new Date().getHours();
+      document.body.classList.toggle('night', h >= 0 && h < 6);
+    }
 
-const grid = document.getElementById("grid");
+    async function render() {
+      grid.innerHTML = '';
+      const results = [];
 
-streams.forEach(s => {
-  const card = document.createElement("div");
-  card.className = "card";
+      for (const m of members) {
+        const live = await checkLive(m);
+        results.push({ ...m, live });
+      }
 
-  const title = document.createElement("div");
-  title.className = "title";
-  title.innerHTML = `${s.name} <span class=\"badge live\">LIVE</span>`;
+      const liveCount = results.filter(r => r.live).length;
 
-  if (s.type === "youtube") {
-    card.classList.add("live");
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
-    card.appendChild(title);
-    card.appendChild(iframe);
-  }
+      if (liveCount === 0) {
+        grid.innerHTML = '<div class="standby">☕ 今は準備中です</div>';
+        return;
+      }
 
-  if (s.type === "twitch") {
-    card.classList.add("live");
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://player.twitch.tv/?channel=${s.channel}&parent=${TWITCH_PARENT}`;
-    card.appendChild(title);
-    card.appendChild(iframe);
-  }
+      results.sort((a, b) => b.live - a.live).forEach(m => {
+        const c = document.createElement('div');
+        c.className = 'card' + (m.live ? ' live' : '');
+        c.innerHTML = `
+          <a href="${m.link}" target="_blank">
+            <img class="icon" src="${m.icon}" alt="${m.name}" />
+            <div class="name">${m.name}</div>
+            <div class="status">${m.live ? '配信中' : 'オフライン'}</div>
+            <span class="badge ${m.live ? 'on' : 'off'}">${m.live ? 'LIVE' : 'OFF'}</span>
+          </a>`;
+        grid.appendChild(c);
+      });
+    }
 
-  grid.appendChild(card);
-});
-</script>
-
-<footer>
-  配信中の枠は自動で目立ちます ☕
-</footer>
-
+    checkNightMode();
+    render();
+    setInterval(() => { checkNightMode(); render(); }, 60000);
+  </script>
 </body>
 </html>
