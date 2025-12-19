@@ -101,31 +101,36 @@
       name: '若凪',
       url: 'https://www.twitch.tv/wakanagi',
       api: 'https://decapi.me/twitch/uptime/wakanagi',
-      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image.png'
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image.png',
+      type: 'twitch'
     },
     {
       name: '柚茶',
       url: 'https://www.twitch.tv/yuzucha08',
       api: 'https://decapi.me/twitch/uptime/yuzucha08',
-      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image.png'
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image.png',
+      type: 'twitch'
     },
     {
       name: 'Lily00',
       url: 'https://www.twitch.tv/lily00_flca',
       api: 'https://decapi.me/twitch/uptime/lily00_flca',
-      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image.png'
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image.png',
+      type: 'twitch'
     },
     {
       name: 'とるま',
       url: 'https://www.twitch.tv/tourma_flca',
       api: 'https://decapi.me/twitch/uptime/tourma_flca',
-      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image.png'
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image.png',
+      type: 'twitch'
     },
     {
       name: 'ふらcafe YouTube',
       url: 'https://www.youtube.com/@flatcafe_games/live',
       api: 'https://decapi.me/youtube/uptime/UCAsCx41YE4mEIBCIAGOzFfA',
-      icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj'
+      icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj',
+      type: 'youtube'
     }
   ];
 
@@ -150,7 +155,9 @@
 
     const liveMembers = results.filter(m => m.isLive);
 
-    if (liveMembers.length === 0) {
+    const twitchLiveCount = results.filter(m => m.isLive && m.type === 'twitch').length;
+
+    if (twitchLiveCount === 0) {
       container.innerHTML = `
         <div class="no-live">
           ☕ 今は配信していません
@@ -158,6 +165,7 @@
         </div>
       `;
       return;
+    }
     }
 
     liveMembers.forEach(m => {
