@@ -76,6 +76,12 @@
       padding: 40px 0;
       font-size: 18px;
     }
+    </style>
+  <style>
+    /* YouTube 特別演出 */
+    .youtube.live { grid-column: 1 / -1; }
+    .yt-embed { width: 100%; aspect-ratio: 16/9; border-radius: 14px; margin-bottom: 10px; }
+    .yt-cta { margin-top: 10px; opacity: .9; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -84,10 +90,17 @@
 
   <script>
     const members = [
-      { name: '若凪', link: 'https://www.twitch.tv/wakanagi', api: 'https://decapi.me/twitch/uptime/wakanagi', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image.png' },
-      { name: '柚茶', link: 'https://www.twitch.tv/yuzucha08', api: 'https://decapi.me/twitch/uptime/yuzucha08', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image.png' },
-      { name: 'Lily00', link: 'https://www.twitch.tv/lily00_flca', api: 'https://decapi.me/twitch/uptime/lily00_flca', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image.png' },
-      { name: 'とるま', link: 'https://www.twitch.tv/tourma_flca', api: 'https://decapi.me/twitch/uptime/tourma_flca', icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image.png' },
+      // icon が空の場合は自動で Twitch / YouTube のデフォルト取得 or 代替表示
+      { type: 'twitch', name: '若凪', link: 'https://www.twitch.tv/wakanagi', api: 'https://decapi.me/twitch/uptime/wakanagi', icon: '' },
+      { type: 'twitch', name: '柚茶', link: 'https://www.twitch.tv/yuzucha08', api: 'https://decapi.me/twitch/uptime/yuzucha08', icon: '' },
+      { type: 'twitch', name: 'Lily00', link: 'https://www.twitch.tv/lily00_flca', api: 'https://decapi.me/twitch/uptime/lily00_flca', icon: '' },
+      { type: 'twitch', name: 'とるま', link: 'https://www.twitch.tv/tourma_flca', api: 'https://decapi.me/twitch/uptime/tourma_flca', icon: '' },
+      { type: 'youtube', name: 'ふらcafe YouTube', link: 'https://www.youtube.com/@flatcafe_games/live', api: 'https://decapi.me/youtube/uptime/UCAsCx41YE4mEIBCIAGOzFfA', icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj', channelId: 'UCAsCx41YE4mEIBCIAGOzFfA' }
+    ];
+      { name: '若凪', link: 'https://www.twitch.tv/wakanagi', api: 'https://decapi.me/twitch/uptime/wakanagi', icon: '' },
+      { name: '柚茶', link: 'https://www.twitch.tv/yuzucha08', api: 'https://decapi.me/twitch/uptime/yuzucha08', icon: '' },
+      { name: 'Lily00', link: 'https://www.twitch.tv/lily00_flca', api: 'https://decapi.me/twitch/uptime/lily00_flca', icon: '' },
+      { name: 'とるま', link: 'https://www.twitch.tv/tourma_flca', api: 'https://decapi.me/twitch/uptime/tourma_flca', icon: '' },
       { name: 'ふらcafe YouTube', link: 'https://www.youtube.com/@flatcafe_games/live', api: 'https://decapi.me/youtube/uptime/UCAsCx41YE4mEIBCIAGOzFfA', icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj' }
     ];
 
@@ -96,9 +109,24 @@
     async function checkLive(m) {
       try {
         const r = await fetch(m.api);
-        const t = await r.text();
-        return !t.toLowerCase().includes('offline');
-      } catch { return false; }
+        const t = (await r.text()).toLowerCase();
+
+        // 共通：offline は確実にオフ
+        if (t.includes('offline')) return false;
+
+        // YouTube対策：予約・待機所を除外
+        if (m.type === 'youtube') {
+          // decapi は予約枠でも uptime を返すことがあるため
+          // "live for" を含む場合のみ LIVE 扱いにする
+          return t.includes('live for');
+        }
+
+        // Twitch は offline でなければ基本 LIVE
+        return true;
+      } catch {
+        return false;
+      }
+    }
     }
 
     function checkNightMode() {
@@ -124,14 +152,34 @@
 
       results.sort((a, b) => b.live - a.live).forEach(m => {
         const c = document.createElement('div');
-        c.className = 'card' + (m.live ? ' live' : '');
-        c.innerHTML = `
-          <a href="${m.link}" target="_blank">
-            <img class="icon" src="${m.icon}" alt="${m.name}" />
-            <div class="name">${m.name}</div>
-            <div class="status">${m.live ? '配信中' : 'オフライン'}</div>
-            <span class="badge ${m.live ? 'on' : 'off'}">${m.live ? 'LIVE' : 'OFF'}</span>
-          </a>`;
+        const isYT = m.type === 'youtube';
+        c.className = 'card' + (m.live ? ' live' : '') + (isYT ? ' youtube' : '');
+        if (isYT && m.live) {
+          c.innerHTML = `
+            <a href="${m.link}" target="_blank">
+              <iframe class="yt-embed" src="https://www.youtube.com/embed/live_stream?channel=${m.channelId}&autoplay=0&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+              <div class="name">${m.name}</div>
+              <div class="status">配信中（YouTube）</div>
+              <span class="badge on">LIVE</span>
+            </a>`;
+        } else if (isYT && !m.live) {
+          c.innerHTML = `
+            <a href="https://www.youtube.com/@flatcafe_games" target="_blank">
+              <img class="icon" src="${m.icon}" alt="${m.name}" />
+              <div class="name">${m.name}</div>
+              <div class="status">オフライン</div>
+              <div class="yt-cta">🔔 チャンネル登録して次回通知</div>
+              <span class="badge off">OFF</span>
+            </a>`;
+        } else {
+          c.innerHTML = `
+            <a href="${m.link}" target="_blank">
+              <img class="icon" src="${m.icon}" alt="${m.name}" />
+              <div class="name">${m.name}</div>
+              <div class="status">${m.live ? '配信中' : 'オフライン'}</div>
+              <span class="badge ${m.live ? 'on' : 'off'}">${m.live ? 'LIVE' : 'OFF'}</span>
+            </a>`;
+        }
         grid.appendChild(c);
       });
     }
