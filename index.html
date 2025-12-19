@@ -2,117 +2,154 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>☕ ふらcafe LIVE</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ふらcafe LIVE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ===== デザイン ===== -->
   <style>
+    :root {
+      --bg-start: #0b1220;
+      --bg-end: #1a2a44;
+      --card: rgba(255,255,255,0.08);
+      --text: #eef3ff;
+      --muted: #aab4d4;
+    }
+
     body {
       margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top, var(--bg-end), var(--bg-start));
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 28px 16px 12px;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .offline {
+      text-align: center;
+      padding: 48px 16px;
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+
+    .offline h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .offline p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .live {
+      display: none;
+      margin-top: 16px;
+    }
+
+    .live iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: none;
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+
+    footer {
+      text-align: center;
       padding: 24px;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #1e293b, #020617);
-      color: #e5e7eb;
+      font-size: 12px;
+      color: var(--muted);
     }
-    h1 { text-align: center; margin-bottom: 32px; letter-spacing: .08em; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-    .card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 20px;
-      padding: 18px;
-      text-align: center;
-      text-decoration: none;
-      color: inherit;
-      box-shadow: 0 15px 40px rgba(0,0,0,.5);
-      transition: transform .3s, box-shadow .3s;
+
+    /* 深夜帯（自動） */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-start: #060a14;
+        --bg-end: #101b30;
+      }
     }
-    .card.live { outline: 2px solid #f43f5e; animation: pulse 1.4s infinite; }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(244,63,94,.7); }
-      70% { box-shadow: 0 0 0 14px rgba(244,63,94,0); }
-      100% { box-shadow: 0 0 0 0 rgba(244,63,94,0); }
-    }
-    .icon { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; background:#0f172a; }
-    .name { font-size: 18px; font-weight: bold; margin-bottom: 6px; }
-    .status { font-size: 14px; opacity: .85; }
-    .no-live {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 60px 20px;
-      font-size: 1.2rem;
-      background: rgba(255,255,255,0.06);
-      border-radius: 20px;
-      box-shadow: 0 0 30px rgba(150,180,255,0.15);
-    }
-    .no-live span { display:block; margin-top:10px; font-size:.9rem; opacity:.7; }
   </style>
 </head>
 <body>
 
-<h1>☕ ふらcafe LIVE</h1>
-<div class="grid" id="streams"></div>
+<header>☕ ふらcafe LIVE</header>
 
+<div class="container">
+
+  <!-- 配信してない時 -->
+  <div id="offline" class="offline">
+    <h2>☕ 今は配信していません</h2>
+    <p>準備ができたら、またここに灯りがつきます</p>
+  </div>
+
+  <!-- 配信中 -->
+  <div id="live" class="live">
+    <iframe id="player" allowfullscreen></iframe>
+  </div>
+
+</div>
+
+<footer>© ふらcafe</footer>
+
+<!-- ===== ロジック ===== -->
 <script>
-  // ===== メンバー定義 =====
-  const members = [
-    { name:'若凪', url:'https://www.twitch.tv/wakanagi', api:'https://decapi.me/twitch/uptime/wakanagi', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image.png', type:'twitch' },
-    { name:'柚茶', url:'https://www.twitch.tv/yuzucha08', api:'https://decapi.me/twitch/uptime/yuzucha08', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image.png', type:'twitch' },
-    { name:'Lily00', url:'https://www.twitch.tv/lily00_flca', api:'https://decapi.me/twitch/uptime/lily00_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image.png', type:'twitch' },
-    { name:'とるま', url:'https://www.twitch.tv/tourma_flca', api:'https://decapi.me/twitch/uptime/tourma_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image.png', type:'twitch' },
-    // ★ YouTubeは表示専用（配信判定に使わない）
-    { name:'ふらcafe YouTube', url:'https://www.youtube.com/@flatcafe_games/live', icon:'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj', type:'youtube' }
-  ];
+/* =============================
+   設定ここだけ触ればOK
+============================= */
+const API_KEY = 'YOUR_YOUTUBE_API_KEY';
+const CHANNEL_ID = 'YOUR_CHANNEL_ID';
 
-  const container = document.getElementById('streams');
+/* ============================= */
 
-  // ===== Twitch専用：確実にオフ判定する =====
-  async function isTwitchLive(api) {
-    try {
-      const res = await fetch(api);
-      const text = (await res.text()).toLowerCase();
-      // decapi はオフ時に必ず offline / not live を含む
-      return !(text.includes('offline') || text.includes('not live'));
-    } catch {
-      return false;
+async function checkLive() {
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${API_KEY}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.items && data.items.length > 0) {
+      const videoId = data.items[0].id.videoId;
+      showLive(videoId);
+    } else {
+      showOffline();
     }
+  } catch (e) {
+    console.error('LIVE取得失敗', e);
+    showOffline();
   }
+}
 
-  async function render() {
-    container.innerHTML = '';
+function showLive(videoId) {
+  document.getElementById('offline').style.display = 'none';
+  const live = document.getElementById('live');
+  const player = document.getElementById('player');
 
-    // Twitchの配信状態だけ取得
-    const twitchResults = await Promise.all(
-      members.filter(m => m.type === 'twitch').map(async m => ({ ...m, isLive: await isTwitchLive(m.api) }))
-    );
+  player.src = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+  live.style.display = 'block';
+}
 
-    const liveTwitch = twitchResults.filter(m => m.isLive);
+function showOffline() {
+  document.getElementById('offline').style.display = 'block';
+  document.getElementById('live').style.display = 'none';
+}
 
-    // ===== 配信0人時：必ずここに来る =====
-    if (liveTwitch.length === 0) {
-      container.innerHTML = `
-        <div class="no-live">
-          ☕ 今は配信していません
-          <span>準備ができたら、またここに灯りがつきます</span>
-        </div>
-      `;
-      return;
-    }
-
-    // ===== 配信中Twitchのみ表示 =====
-    liveTwitch.forEach(m => {
-      const a = document.createElement('a');
-      a.href = m.url;
-      a.target = '_blank';
-      a.className = 'card live';
-      a.innerHTML = `
-        <img class="icon" src="${m.icon}" alt="${m.name}">
-        <div class="name">${m.name}</div>
-        <div class="status">🔴 LIVE</div>
-      `;
-      container.appendChild(a);
-    });
-  }
-
-  render();
-  setInterval(render, 60000);
+checkLive();
+// 60秒ごとに再チェック（自動切替）
+setInterval(checkLive, 60000);
 </script>
 
 </body>
