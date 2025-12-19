@@ -2,191 +2,183 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>ふらcafe LIVE</title>
+  <title>☕ ふらcafe LIVE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    :root {
-      --bg-main: radial-gradient(circle at top, #1e293b, #020617);
-      --card-bg: linear-gradient(180deg, #020617, #020617dd);
-    }
-    body.night {
-      --bg-main: radial-gradient(circle at top, #020617, #000);
-      --card-bg: linear-gradient(180deg, #020617, #000);
-    }
     body {
-      font-family: system-ui, sans-serif;
-      background: var(--bg-main);
-      color: #e5e7eb;
       margin: 0;
       padding: 24px;
-      transition: background .6s;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      color: #e5e7eb;
     }
-    h1 { text-align: center; margin-bottom: 32px; letter-spacing: .08em; }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: .08em;
+    }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 20px;
     }
+
     .card {
+      background: rgba(255,255,255,0.05);
       border-radius: 20px;
       padding: 18px;
-      background: var(--card-bg);
-      box-shadow: 0 15px 40px rgba(0,0,0,.5);
       text-align: center;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 15px 40px rgba(0,0,0,.5);
       transition: transform .3s, box-shadow .3s;
-      position: relative;
-      overflow: hidden;
     }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0,0,0,.7);
+    }
+
     .card.live {
-      grid-column: span 2;
+      outline: 2px solid #f43f5e;
+      animation: pulse 1.4s infinite;
     }
-    .card::after {
-      content: '☾';
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      opacity: .15;
-      font-size: 32px;
-    }
-    .card a { color: inherit; text-decoration: none; }
-    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,.7); }
 
-    .icon {
-      width: 64px; height: 64px; border-radius: 50%;
-      margin: 0 auto 12px; object-fit: cover; background: #0f172a;
-    }
-    .name { font-size: 18px; font-weight: bold; margin-bottom: 6px; }
-    .status { font-size: 14px; opacity: .85; }
-
-    .live { outline: 2px solid #f43f5e; animation: pulse 1.4s infinite; }
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(244,63,94,.7); }
       70% { box-shadow: 0 0 0 14px rgba(244,63,94,0); }
       100% { box-shadow: 0 0 0 0 rgba(244,63,94,0); }
     }
-    .badge { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px; font-size: 12px; letter-spacing: .08em; }
-    .on { background: #f43f5e; }
-    .off { background: #334155; }
 
-    .standby {
+    .icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 12px;
+      background: #0f172a;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .status {
+      font-size: 14px;
+      opacity: .85;
+    }
+
+    .no-live {
       grid-column: 1 / -1;
       text-align: center;
-      opacity: .8;
-      padding: 40px 0;
-      font-size: 18px;
+      padding: 60px 20px;
+      font-size: 1.2rem;
+      background: rgba(255,255,255,0.06);
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(150,180,255,0.15);
     }
-    </style>
-  <style>
-    /* YouTube 特別演出 */
-    .youtube.live { grid-column: 1 / -1; }
-    .yt-embed { width: 100%; aspect-ratio: 16/9; border-radius: 14px; margin-bottom: 10px; }
-    .yt-cta { margin-top: 10px; opacity: .9; font-size: 14px; }
+
+    .no-live span {
+      display: block;
+      margin-top: 10px;
+      font-size: .9rem;
+      opacity: .7;
+    }
   </style>
 </head>
 <body>
-  <h1>☕ ふらcafe LIVE ☾</h1>
-  <div class="grid" id="grid"></div>
 
-  <script>
-    const members = [
-      // icon が空の場合は自動で Twitch / YouTube のデフォルト取得 or 代替表示
-      { type: 'twitch', name: '若凪', link: 'https://www.twitch.tv/wakanagi', api: 'https://decapi.me/twitch/uptime/wakanagi', icon: '' },
-      { type: 'twitch', name: '柚茶', link: 'https://www.twitch.tv/yuzucha08', api: 'https://decapi.me/twitch/uptime/yuzucha08', icon: '' },
-      { type: 'twitch', name: 'Lily00', link: 'https://www.twitch.tv/lily00_flca', api: 'https://decapi.me/twitch/uptime/lily00_flca', icon: '' },
-      { type: 'twitch', name: 'とるま', link: 'https://www.twitch.tv/tourma_flca', api: 'https://decapi.me/twitch/uptime/tourma_flca', icon: '' },
-      { type: 'youtube', name: 'ふらcafe YouTube', link: 'https://www.youtube.com/@flatcafe_games/live', api: 'https://decapi.me/youtube/uptime/UCAsCx41YE4mEIBCIAGOzFfA', icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj', channelId: 'UCAsCx41YE4mEIBCIAGOzFfA' }
-    ];
-      { name: '若凪', link: 'https://www.twitch.tv/wakanagi', api: 'https://decapi.me/twitch/uptime/wakanagi', icon: '' },
-      { name: '柚茶', link: 'https://www.twitch.tv/yuzucha08', api: 'https://decapi.me/twitch/uptime/yuzucha08', icon: '' },
-      { name: 'Lily00', link: 'https://www.twitch.tv/lily00_flca', api: 'https://decapi.me/twitch/uptime/lily00_flca', icon: '' },
-      { name: 'とるま', link: 'https://www.twitch.tv/tourma_flca', api: 'https://decapi.me/twitch/uptime/tourma_flca', icon: '' },
-      { name: 'ふらcafe YouTube', link: 'https://www.youtube.com/@flatcafe_games/live', api: 'https://decapi.me/youtube/uptime/UCAsCx41YE4mEIBCIAGOzFfA', icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj' }
-    ];
+<h1>☕ ふらcafe LIVE</h1>
+<div class="grid" id="streams"></div>
 
-    const grid = document.getElementById('grid');
-
-    async function checkLive(m) {
-      try {
-        const r = await fetch(m.api);
-        const t = (await r.text()).toLowerCase();
-
-        // 共通：offline は確実にオフ
-        if (t.includes('offline')) return false;
-
-        // YouTube対策：予約・待機所を除外
-        if (m.type === 'youtube') {
-          // decapi は予約枠でも uptime を返すことがあるため
-          // "live for" を含む場合のみ LIVE 扱いにする
-          return t.includes('live for');
-        }
-
-        // Twitch は offline でなければ基本 LIVE
-        return true;
-      } catch {
-        return false;
-      }
+<script>
+  const members = [
+    {
+      name: '若凪',
+      url: 'https://www.twitch.tv/wakanagi',
+      api: 'https://decapi.me/twitch/uptime/wakanagi',
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image.png'
+    },
+    {
+      name: '柚茶',
+      url: 'https://www.twitch.tv/yuzucha08',
+      api: 'https://decapi.me/twitch/uptime/yuzucha08',
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image.png'
+    },
+    {
+      name: 'Lily00',
+      url: 'https://www.twitch.tv/lily00_flca',
+      api: 'https://decapi.me/twitch/uptime/lily00_flca',
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image.png'
+    },
+    {
+      name: 'とるま',
+      url: 'https://www.twitch.tv/tourma_flca',
+      api: 'https://decapi.me/twitch/uptime/tourma_flca',
+      icon: 'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image.png'
+    },
+    {
+      name: 'ふらcafe YouTube',
+      url: 'https://www.youtube.com/@flatcafe_games/live',
+      api: 'https://decapi.me/youtube/uptime/UCAsCx41YE4mEIBCIAGOzFfA',
+      icon: 'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj'
     }
+  ];
+
+  const container = document.getElementById('streams');
+
+  async function isLive(api) {
+    try {
+      const res = await fetch(api);
+      const text = await res.text();
+      return !text.toLowerCase().includes('offline');
+    } catch {
+      return false;
     }
+  }
 
-    function checkNightMode() {
-      const h = new Date().getHours();
-      document.body.classList.toggle('night', h >= 0 && h < 6);
-    }
+  async function render() {
+    container.innerHTML = '';
 
-    async function render() {
-      grid.innerHTML = '';
-      const results = [];
+    const results = await Promise.all(
+      members.map(async m => ({ ...m, isLive: await isLive(m.api) }))
+    );
 
-      for (const m of members) {
-        const live = await checkLive(m);
-        results.push({ ...m, live });
-      }
+    const liveMembers = results.filter(m => m.isLive);
 
-      const liveCount = results.filter(r => r.live).length;
-
-      if (liveCount === 0) {
-        grid.innerHTML = '<div class="standby">☕ 今は準備中です</div>';
-        return;
-      }
-
-      results.sort((a, b) => b.live - a.live).forEach(m => {
-        const c = document.createElement('div');
-        const isYT = m.type === 'youtube';
-        c.className = 'card' + (m.live ? ' live' : '') + (isYT ? ' youtube' : '');
-        if (isYT && m.live) {
-          c.innerHTML = `
-            <a href="${m.link}" target="_blank">
-              <iframe class="yt-embed" src="https://www.youtube.com/embed/live_stream?channel=${m.channelId}&autoplay=0&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-              <div class="name">${m.name}</div>
-              <div class="status">配信中（YouTube）</div>
-              <span class="badge on">LIVE</span>
-            </a>`;
-        } else if (isYT && !m.live) {
-          c.innerHTML = `
-            <a href="https://www.youtube.com/@flatcafe_games" target="_blank">
-              <img class="icon" src="${m.icon}" alt="${m.name}" />
-              <div class="name">${m.name}</div>
-              <div class="status">オフライン</div>
-              <div class="yt-cta">🔔 チャンネル登録して次回通知</div>
-              <span class="badge off">OFF</span>
-            </a>`;
-        } else {
-          c.innerHTML = `
-            <a href="${m.link}" target="_blank">
-              <img class="icon" src="${m.icon}" alt="${m.name}" />
-              <div class="name">${m.name}</div>
-              <div class="status">${m.live ? '配信中' : 'オフライン'}</div>
-              <span class="badge ${m.live ? 'on' : 'off'}">${m.live ? 'LIVE' : 'OFF'}</span>
-            </a>`;
-        }
-        grid.appendChild(c);
-      });
+    if (liveMembers.length === 0) {
+      container.innerHTML = `
+        <div class="no-live">
+          ☕ 今は配信していません
+          <span>準備ができたら、またここに灯りがつきます</span>
+        </div>
+      `;
+      return;
     }
 
-    checkNightMode();
-    render();
-    setInterval(() => { checkNightMode(); render(); }, 60000);
-  </script>
+    liveMembers.forEach(m => {
+      const a = document.createElement('a');
+      a.href = m.url;
+      a.target = '_blank';
+      a.className = 'card live';
+
+      a.innerHTML = `
+        <img class="icon" src="${m.icon}" alt="${m.name}">
+        <div class="name">${m.name}</div>
+        <div class="status">🔴 LIVE</div>
+      `;
+
+      container.appendChild(a);
+    });
+  }
+
+  render();
+  setInterval(render, 60000);
+</script>
+
 </body>
 </html>
