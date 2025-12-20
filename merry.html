@@ -3,20 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Merry Christmas Mikke! - とるま Illustration</title>
+  <title>Merry Christmas Party! - とるま Illustration</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=M+PLUS+Rounded+1c:wght@700&display=swap" rel="stylesheet">
   <style>
     /* --- 基本設定 --- */
     body {
       margin: 0; padding: 0;
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      background: radial-gradient(circle at center, #0a2a1a 0%, #051510 100%);
+      
+      /* ▼▼▼ 背景設定ここから ▼▼▼ */
+      /* ここに生成した画像のファイルパスを入れる */
+      background-image: url('bg_christmas_party.jpg'); 
+      background-size: cover;      /* 画面いっぱいに広げる */
+      background-position: center; /* 中央寄せ */
+      background-attachment: fixed;/* スクロールしても背景を固定（パララックス効果UP） */
+      background-color: #0a1a1a;   /* 画像読み込み前の色（暗めにしておく） */
+      /* ▲▲▲ 背景設定ここまで ▲▲▲ */
+      
       color: #fff;
       overflow-x: hidden;
-      min-height: 250vh; /* ゴチャゴチャを楽しむために長めに設定 */
+      min-height: 250vh;
     }
 
-    /* --- パーティー演出：大量の雪と光 --- */
+    /* --- 以下、前回のコードと同じ --- */
+    /* パーティー演出：大量の雪と光 */
     .snow-container {
       position: fixed; top:0; left:0; width:100%; height:100%;
       pointer-events: none; z-index: 1;
@@ -27,51 +37,39 @@
     }
     @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-    /* --- ミッケ層：手前・中景・遠景の装飾 --- */
+    /* ミッケ層：手前・中景・遠景の装飾 */
     .parallax-layer {
       position: fixed; top: -20%; left: -10%; width: 120%; height: 150%;
       pointer-events: none; will-change: transform;
     }
-    
-    /* レイヤー分け：z-indexと速度を変える */
-    #layer-front { z-index: 9999; filter: blur(5px); opacity: 0.8; } /* 手前：速い・ボケ */
-    #layer-mid { z-index: 5; filter: blur(0px); opacity: 0.9; }    /* 中景：普通・クッキリ */
+    #layer-front { z-index: 9999; filter: blur(5px); opacity: 0.8; }
+    #layer-mid { z-index: 5; filter: blur(0px); opacity: 0.9; }
 
-    /* 装飾小物のスタイル */
     .item { position: absolute; font-size: 2rem; user-select: none; }
     .item.large { font-size: 8rem; }
     .item.medium { font-size: 4rem; }
     .item.small { font-size: 1.5rem; }
-
-    /* 各小物の配置（ミッケ感を出すためにバラバラに） */
     .red-ball { background: radial-gradient(circle at 30% 30%, #ff4d4d, #c70039); border-radius: 50%; }
     .gold-ball { background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b); border-radius: 50%; }
 
-    /* --- コンテンツセクション --- */
+    /* コンテンツセクション */
     section { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; padding: 0 20px; box-sizing: border-box; }
 
-    /* ヘッダー：見切れ防止済み */
     .neon-christmas {
       font-family: 'Great Vibes', cursive;
-      /* スマホで見切れないようにサイズを調整 */
       font-size: clamp(2.5rem, 12vw, 7rem);
       color: #fff;
       text-shadow: 0 0 10px #fff, 0 0 20px #ff0055, 0 0 40px #ff0055;
-      line-height: 1.2;
-      margin: 0;
+      line-height: 1.2; margin: 0;
       animation: glow 2s ease-in-out infinite alternate;
     }
     @keyframes glow { from { text-shadow: 0 0 10px #fff, 0 0 20px #ff0055; } to { text-shadow: 0 0 20px #fff, 0 0 40px #ff0055, 0 0 60px #ff0055; } }
 
-    /* 横長イラストフレーム */
     .illust-frame {
-      width: 100%; max-width: 850px;
-      aspect-ratio: 16 / 9;
+      width: 100%; max-width: 850px; aspect-ratio: 16 / 9;
       border: 5px solid #d4af37;
       box-shadow: 0 0 60px rgba(212, 175, 55, 0.6);
-      border-radius: 15px;
-      overflow: hidden;
-      background: #000;
+      border-radius: 15px; overflow: hidden; background: #000;
       margin: 40px 0;
     }
     .illust-frame img { width: 100%; height: 100%; object-fit: contain; }
@@ -114,7 +112,7 @@
   </main>
 
   <script>
-    // 雪を自動生成
+    // 雪生成
     const snowBox = document.getElementById('snow-box');
     const icons = ['❄', '❅', '❆', '✨'];
     for (let i = 0; i < 30; i++) {
@@ -128,25 +126,18 @@
       s.style.opacity = Math.random();
       snowBox.appendChild(s);
     }
-
-    // 多層パララックス制御
+    // パララックス制御
     const front = document.getElementById('layer-front');
     const mid = document.getElementById('layer-mid');
     let ticking = false;
-
     function updateParallax() {
       const y = window.pageYOffset;
-      // 手前は速く（0.8倍）、中景は少しゆっくり（0.4倍）
       front.style.transform = `translate3d(0, ${y * -0.8}px, 0)`;
       mid.style.transform = `translate3d(0, ${y * -0.4}px, 0)`;
       ticking = false;
     }
-
     window.addEventListener('scroll', () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateParallax);
-        ticking = true;
-      }
+      if (!ticking) { window.requestAnimationFrame(updateParallax); ticking = true; }
     });
   </script>
 </body>
