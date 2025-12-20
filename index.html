@@ -26,16 +26,16 @@ h1 { text-align:center; margin-bottom:32px; letter-spacing:.08em; }
 <script>
 // ===== メンバー定義 =====
 const members = [
-  { name:'若凪', url:'https://www.twitch.tv/wakanagi', api:'https://decapi.me/twitch/uptime/wakanagi', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image.png', type:'twitch' },
-  { name:'柚茶', url:'https://www.twitch.tv/yuzucha08', api:'https://decapi.me/twitch/uptime/yuzucha08', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image.png', type:'twitch' },
-  { name:'Lily00', url:'https://www.twitch.tv/lily00_flca', api:'https://decapi.me/twitch/uptime/lily00_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image.png', type:'twitch' },
-  { name:'とるま', url:'https://www.twitch.tv/tourma_flca', api:'https://decapi.me/twitch/uptime/tourma_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca.png', type:'twitch' },
-  { name:'ふらcafe YouTube', url:'https://www.youtube.com/@flatcafe_games/live', icon:'https://yt3.googleusercontent.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj', type:'youtube' }
+  { name:'若凪', url:'https://www.twitch.tv/wakanagi', api:'https://decapi.me/twitch/uptime/wakanagi', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-300x300.png', type:'twitch' },
+  { name:'柚茶', url:'https://www.twitch.tv/yuzucha08', api:'https://decapi.me/twitch/uptime/yuzucha08', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-300x300.png', type:'twitch' },
+  { name:'Lily00', url:'https://www.twitch.tv/lily00_flca', api:'https://decapi.me/twitch/uptime/lily00_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-300x300.png', type:'twitch' },
+  { name:'とるま', url:'https://www.twitch.tv/tourma_flca', api:'https://decapi.me/twitch/uptime/tourma_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-300x300.png', type:'twitch' },
+  { name:'ふらcafe YouTube', url:'https://www.youtube.com/@flatcafe_games/live', icon:'https://yt3.ggpht.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s176-c-k-c0x00ffffff-no-rj', type:'youtube' }
 ];
 
 const container = document.getElementById('streams');
 
-async function isTwitchLive(api,name){
+async function isTwitchLive(api){
   try{
     const res = await fetch(api);
     const text = (await res.text()).toLowerCase();
@@ -49,8 +49,9 @@ async function render(){
   container.innerHTML = `<div class="no-live">☕ 今は配信していません<span>準備ができたら、またここに灯りがつきます</span></div>`;
 
   try {
+    // Twitchライブ判定
     const twitchResults = await Promise.all(
-      members.filter(m=>m.type==='twitch').map(async m=>({...m, isLive: await isTwitchLive(m.api,m.name)}))
+      members.filter(m=>m.type==='twitch').map(async m=>({...m, isLive: await isTwitchLive(m.api)}))
     );
 
     const liveTwitch = twitchResults.filter(m=>m.isLive);
