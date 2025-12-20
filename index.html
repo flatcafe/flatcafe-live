@@ -18,7 +18,7 @@
     body {
       margin: 0;
       font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
-      /* 背景画像を固定し奥行きの基点にする */
+      /* 背景画像を固定し、視差効果のベースにする */
       background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1950&q=80') no-repeat center center fixed;
       background-size: cover;
       color: #333;
@@ -33,23 +33,23 @@
       z-index: -2;
     }
 
-    /* --- 手前の塵（ホコリ）レイヤー --- */
+    /* --- 【重要】塵（ホコリ）レイヤー：最前面設定 --- */
     .dust-layer {
       position: fixed;
       /* 動きの余白として上下左右に広げる */
       top: -15%; left: -10%; width: 120%; height: 130%;
-      pointer-events: none;
-      z-index: 100;
-      opacity: 0.7;
-      filter: blur(2px); /* ほどよいピントのズレ */
+      pointer-events: none; /* これがないと下のボタンが押せません */
+      z-index: 9999; /* 数値を最大級にし、全要素の上に配置 */
+      opacity: 0.75;
+      filter: blur(1.5px); /* ほどよい「手前にあるボケ感」 */
       
       /* 視認性を高めた塵のテクスチャ */
       background-image: 
-        radial-gradient(rgba(255,255,255,0.4) 2px, transparent 2px),
+        radial-gradient(rgba(255,255,255,0.45) 2.2px, transparent 2.2px),
         radial-gradient(rgba(255,255,255,0.3) 1.5px, transparent 1.5px),
-        radial-gradient(rgba(255,240,220,0.2) 3.5px, transparent 3.5px);
-      background-size: 110px 110px, 190px 190px, 260px 260px;
-      background-position: 0 0, 40px 60px, 130px 200px;
+        radial-gradient(rgba(255,245,230,0.25) 3.5px, transparent 3.5px);
+      background-size: 100px 100px, 180px 180px, 240px 240px;
+      background-position: 0 0, 50px 70px, 110px 180px;
       will-change: transform;
     }
 
@@ -57,17 +57,16 @@
     h2 {
       text-align: center;
       margin: 60px 0;
-      font-size: clamp(1.1rem, 5.8vw, 2.5rem); /* 極小画面でも1行を維持 */
+      font-size: clamp(1.1rem, 5.8vw, 2.5rem);
       white-space: nowrap; 
       letter-spacing: 0.08em;
       color: #fff;
-      /* 点滅なしの品のある発光 */
       text-shadow:
         0 0 7px #fff,
         0 0 15px #ff0055,
         0 0 30px #ff0055;
       position: relative;
-      z-index: 1;
+      z-index: 1; /* 塵(9999)の下に配置 */
     }
 
     /* --- レイアウト --- */
@@ -79,7 +78,7 @@
       margin: 0 auto;
       padding: 0 20px 60px;
       position: relative;
-      z-index: 1;
+      z-index: 1; /* 塵(9999)の下に配置 */
     }
 
     /* --- カードデザイン --- */
@@ -178,7 +177,7 @@
       z-index: 3;
     }
 
-    /* 個別カラー（高コントラスト調整済み） */
+    /* 各種カラー */
     .card-yt { background: var(--bg-yt); color: var(--text-yt); }
     .card-waka { background: var(--bg-waka); color: var(--text-waka); }
     .card-yuzu { background: var(--bg-yuzu); color: var(--text-yuzu); }
@@ -249,13 +248,10 @@
 </div>
 
 <script>
-/**
- * 設定：APIキーをここに入力
- */
 const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE';
 const YT_CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
 
-// API通信（タイムアウト付き）
+// --- 通信処理省略せず記述 ---
 async function fetchWithTimeout(resource, options = {}) {
   const { timeout = 5000 } = options;
   const controller = new AbortController();
@@ -264,21 +260,16 @@ async function fetchWithTimeout(resource, options = {}) {
     const response = await fetch(resource, { ...options, signal: controller.signal });
     clearTimeout(id);
     return response;
-  } catch (e) {
-    clearTimeout(id);
-    throw e;
-  }
+  } catch (e) { clearTimeout(id); throw e; }
 }
 
-// YouTubeステータス確認
 async function checkYouTube() {
   const card = document.getElementById('yt-card');
   const thumb = document.getElementById('yt-thumb');
   const status = document.getElementById('yt-status');
   const badge = card.querySelector('.badge-offline');
-
   try {
-    if (YT_API_KEY.includes('ここに')) throw new Error('Key not set');
+    if (YT_API_KEY.includes('ここに')) throw new Error('Key missing');
     const res = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YT_CHANNEL_ID}&type=video&eventType=live&liveBroadcastContent=live&maxResults=1&key=${YT_API_KEY}`);
     const data = await res.json();
     if (data.items && data.items.length > 0) {
@@ -296,7 +287,6 @@ async function checkYouTube() {
   }
 }
 
-// Twitchステータス確認
 async function checkTwitch() {
   const cards = document.querySelectorAll('#portal-container .card[data-channel]');
   await Promise.all(Array.from(cards).map(async (card) => {
@@ -304,7 +294,6 @@ async function checkTwitch() {
     const img = card.querySelector('img');
     const statusDiv = card.querySelector('.status');
     const badge = card.querySelector('.badge-offline');
-
     try {
       const res = await fetchWithTimeout(`https://decapi.me/twitch/uptime/${channel}`);
       const text = await res.text();
@@ -323,13 +312,14 @@ async function checkTwitch() {
   }));
 }
 
-// パララックス（塵レイヤー）の制御
+// --- パララックス制御 ---
 const dustLayer = document.getElementById('dust-layer');
 let ticking = false;
 
 function updateParallax() {
   const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-  const moveY = scrollY * -0.3; // スクロール量の30%分逆方向に動く
+  // スクロール速度の35%で逆方向にスライド
+  const moveY = scrollY * -0.35; 
   dustLayer.style.transform = `translate3d(0, ${moveY}px, 0)`;
   ticking = false;
 }
@@ -342,11 +332,7 @@ window.addEventListener('scroll', () => {
 });
 
 function refreshAll() { checkYouTube(); checkTwitch(); }
-
-window.addEventListener('load', () => {
-  refreshAll();
-  setInterval(refreshAll, 60000);
-});
+window.addEventListener('load', () => { refreshAll(); setInterval(refreshAll, 60000); });
 </script>
 
 </body>
