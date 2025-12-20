@@ -11,7 +11,6 @@
     background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1950&q=80') no-repeat center center fixed;
     background-size: cover;
     color: #333;
-    position: relative;
   }
 
   body::before {
@@ -38,7 +37,6 @@
   }
 
   .card {
-    background: rgba(245, 240, 230, 0.9);
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 12px;
@@ -46,26 +44,18 @@
     text-align: center;
     position: relative;
     transition: transform 0.2s;
+    color: #333;
+    text-decoration: none;
+    display: block;
   }
 
   .card:hover { transform: scale(1.03); }
 
-  /* LIVE中 */
-  .card.live {
-    border: 2px solid #8B0000; /* ワインレッド */
-  }
+  .card.live { border: 2px solid #8B0000; }
 
-  /* OFFLINE用 */
   .card.offline {
     border: 2px dashed #aaa;
-    background: rgba(200,195,180,0.6);
-    filter: grayscale(30%) blur(2px);
-    animation: pulseOffline 2s infinite;
-  }
-
-  @keyframes pulseOffline {
-    0%,100% {opacity:0.8;}
-    50% {opacity:0.6;}
+    filter: none;
   }
 
   .card img {
@@ -79,7 +69,6 @@
     font-size: 14px;
     margin-top: 8px;
     font-weight: bold;
-    color: #4B3832;
   }
 
   .card .status {
@@ -88,7 +77,6 @@
     color: #555;
   }
 
-  /* OFFLINEバッジ */
   .badge-offline {
     position: absolute;
     top: 8px; right: 8px;
@@ -110,57 +98,55 @@
 
 <!-- YouTube -->
 <div class="container">
-  <div class="card" id="youtube-card">
+  <a href="https://www.youtube.com/@flatcafe_games/live" target="_blank" class="card" id="youtube-card" style="background:#D7BFAE;">
     <div style="position:relative;">
       <img id="youtube-thumb" src="" alt="YouTube Live">
       <div class="badge-offline" style="display:none;">OFFLINE</div>
     </div>
     <div class="title">YouTube: ふらcafe</div>
     <div class="status" id="youtube-status">読み込み中...</div>
-  </div>
+  </a>
 </div>
 
 <!-- Twitch -->
 <div class="container" id="twitch-container">
-  <div class="card" data-channel="wakanagi">
+  <a href="https://www.twitch.tv/wakanagi" target="_blank" class="card" data-channel="wakanagi" style="background:#abc888;">
     <div style="position:relative;">
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-150x150.png" alt="wakanagi">
-      <div class="badge-offline" style="display:none;">OFFLINE</div>
+      <div class="badge-offline" style="display:none;">閉店中</div>
     </div>
     <div class="title">Twitch: 若凪</div>
     <div class="status">読み込み中...</div>
-  </div>
-  <div class="card" data-channel="yuzucha08">
+  </a>
+  <a href="https://www.twitch.tv/yuzucha08" target="_blank" class="card" data-channel="yuzucha08" style="background:#fef263;">
     <div style="position:relative;">
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-150x150.png" alt="yuzucha08">
-      <div class="badge-offline" style="display:none;">OFFLINE</div>
+      <div class="badge-offline" style="display:none;">閉店中</div>
     </div>
     <div class="title">Twitch: 柚茶</div>
     <div class="status">読み込み中...</div>
-  </div>
-  <div class="card" data-channel="lily00_flca">
+  </a>
+  <a href="https://www.twitch.tv/lily00_flca" target="_blank" class="card" data-channel="lily00_flca" style="background:#a12722;">
     <div style="position:relative;">
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-150x150.png" alt="Lily00">
-      <div class="badge-offline" style="display:none;">OFFLINE</div>
+      <div class="badge-offline" style="display:none;">閉店中</div>
     </div>
     <div class="title">Twitch: Lily00</div>
     <div class="status">読み込み中...</div>
-  </div>
-  <div class="card" data-channel="tourma_flca">
+  </a>
+  <a href="https://www.twitch.tv/tourma_flca" target="_blank" class="card" data-channel="tourma_flca" style="background:#968ABD;">
     <div style="position:relative;">
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-150x150.png" alt="とるま">
-      <div class="badge-offline" style="display:none;">OFFLINE</div>
+      <div class="badge-offline" style="display:none;">閉店中</div>
     </div>
     <div class="title">Twitch: とるま</div>
     <div class="status">読み込み中...</div>
-  </div>
+  </a>
 </div>
 
 <script>
 const YT_CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
 const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE';
-const YT_LIVE_URL = 'https://www.youtube.com/@flatcafe_games/live';
-const YT_ICON = 'https://yt3.ggpht.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s300-c-k-c0x00ffffff-no-rj';
 
 async function checkYouTube() {
   try {
@@ -172,15 +158,14 @@ async function checkYouTube() {
     const badge = card.querySelector('.badge-offline');
 
     if (data.items && data.items.length > 0) {
-      const vid = data.items[0];
-      thumb.src = vid.snippet.thumbnails.medium.url;
+      thumb.src = data.items[0].snippet.thumbnails.medium.url;
       status.textContent = 'LIVE中！';
       card.classList.add('live');
       card.classList.remove('offline');
       badge.style.display = 'none';
     } else {
-      thumb.src = YT_ICON;
-      status.textContent = 'OFFLINE';
+      thumb.src = 'https://yt3.ggpht.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s300-c-k-c0x00ffffff-no-rj';
+      status.textContent = '閉店中';
       card.classList.remove('live');
       card.classList.add('offline');
       badge.style.display = 'block';
@@ -193,21 +178,28 @@ async function checkTwitch() {
   for (const card of cards) {
     const channel = card.dataset.channel;
     const badge = card.querySelector('.badge-offline');
+    const statusDiv = card.querySelector('.status');
     try {
       const res = await fetch(`https://decapi.me/twitch/uptime/${channel}`);
       const text = await res.text();
-      const statusDiv = card.querySelector('.status');
-      statusDiv.textContent = text;
       if (!text.includes('offline')) {
         card.classList.add('live');
         card.classList.remove('offline');
         badge.style.display = 'none';
+        statusDiv.textContent = text;
       } else {
         card.classList.remove('live');
         card.classList.add('offline');
         badge.style.display = 'block';
+        statusDiv.textContent = '閉店中';
       }
-    } catch(e) { console.error(e); }
+    } catch(e) {
+      console.error(e);
+      card.classList.remove('live');
+      card.classList.add('offline');
+      badge.style.display = 'block';
+      statusDiv.textContent = '閉店中';
+    }
   }
 }
 
@@ -217,7 +209,7 @@ function refreshAll() {
 }
 
 refreshAll();
-setInterval(refreshAll, 60000); // 1分ごと更新
+setInterval(refreshAll, 60000);
 </script>
 
 </body>
