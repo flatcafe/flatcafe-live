@@ -3,100 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Merry Christmas Party - とるま Illustration</title>
+  <title>Merry Christmas Mikke! - とるま Illustration</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=M+PLUS+Rounded+1c:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* --- 全体設定 --- */
+    /* --- 基本設定 --- */
     body {
       margin: 0; padding: 0;
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      background: radial-gradient(circle, #0a2a1a 0%, #051510 100%);
+      background: radial-gradient(circle at center, #0a2a1a 0%, #051510 100%);
       color: #fff;
       overflow-x: hidden;
-      min-height: 200vh; /* スクロール用の高さを確保 */
+      min-height: 250vh; /* ゴチャゴチャを楽しむために長めに設定 */
     }
 
-    /* --- パーティー演出：舞い落ちる雪 --- */
+    /* --- パーティー演出：大量の雪と光 --- */
     .snow-container {
       position: fixed; top:0; left:0; width:100%; height:100%;
       pointer-events: none; z-index: 1;
     }
     .snowflake {
-      position: absolute; top: -10%; color: #fff;
+      position: absolute; top: -10%; color: rgba(255,255,255,0.8);
       animation: fall linear infinite;
     }
-    @keyframes fall {
-      to { transform: translateY(110vh); }
-    }
-    /* 雪のサイズ・場所・速度をランダムに */
-    .s1 { left: 10%; font-size: 1.2rem; animation-duration: 8s; animation-delay: 0s; }
-    .s2 { left: 30%; font-size: 0.8rem; animation-duration: 12s; animation-delay: 2s; }
-    .s3 { left: 70%; font-size: 1.5rem; animation-duration: 6s; animation-delay: 4s; }
-    .s4 { left: 90%; font-size: 1rem; animation-duration: 10s; animation-delay: 1s; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-    /* --- 最前面レイヤー：ブラーオーナメント --- */
-    .ornament-layer {
-      position: fixed;
-      top: -20%; left: 0; width: 100%; height: 140%;
-      pointer-events: none;
-      z-index: 9999;
-      will-change: transform; /* スムーズな動きの鍵 */
+    /* --- ミッケ層：手前・中景・遠景の装飾 --- */
+    .parallax-layer {
+      position: fixed; top: -20%; left: -10%; width: 120%; height: 150%;
+      pointer-events: none; will-change: transform;
     }
-    .ornament {
-      position: absolute; border-radius: 50%; filter: blur(6px);
-    }
-    .ball-red { top: 15%; left: -5%; width: 200px; height: 200px; background: radial-gradient(circle at 30% 30%, #ff4d4d, #c70039); opacity: 0.7; }
-    .ball-gold { top: 70%; right: -8%; width: 150px; height: 150px; background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b); opacity: 0.6; }
+    
+    /* レイヤー分け：z-indexと速度を変える */
+    #layer-front { z-index: 9999; filter: blur(5px); opacity: 0.8; } /* 手前：速い・ボケ */
+    #layer-mid { z-index: 5; filter: blur(0px); opacity: 0.9; }    /* 中景：普通・クッキリ */
+
+    /* 装飾小物のスタイル */
+    .item { position: absolute; font-size: 2rem; user-select: none; }
+    .item.large { font-size: 8rem; }
+    .item.medium { font-size: 4rem; }
+    .item.small { font-size: 1.5rem; }
+
+    /* 各小物の配置（ミッケ感を出すためにバラバラに） */
+    .red-ball { background: radial-gradient(circle at 30% 30%, #ff4d4d, #c70039); border-radius: 50%; }
+    .gold-ball { background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b); border-radius: 50%; }
 
     /* --- コンテンツセクション --- */
-    section { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; }
+    section { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; padding: 0 20px; box-sizing: border-box; }
 
-    /* メリークリスマスおしゃれ文字 */
+    /* ヘッダー：見切れ防止済み */
     .neon-christmas {
       font-family: 'Great Vibes', cursive;
-      font-size: clamp(3.5rem, 15vw, 8rem);
+      /* スマホで見切れないようにサイズを調整 */
+      font-size: clamp(2.5rem, 12vw, 7rem);
       color: #fff;
       text-shadow: 0 0 10px #fff, 0 0 20px #ff0055, 0 0 40px #ff0055;
-      white-space: nowrap;
+      line-height: 1.2;
+      margin: 0;
       animation: glow 2s ease-in-out infinite alternate;
     }
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #fff, 0 0 20px #ff0055; }
-      to { text-shadow: 0 0 20px #fff, 0 0 40px #ff0055, 0 0 60px #ff0055; }
-    }
+    @keyframes glow { from { text-shadow: 0 0 10px #fff, 0 0 20px #ff0055; } to { text-shadow: 0 0 20px #fff, 0 0 40px #ff0055, 0 0 60px #ff0055; } }
 
-    /* イラストフレーム（横長対応：16:9） */
+    /* 横長イラストフレーム */
     .illust-frame {
-      width: 90vw; max-width: 800px; /* PCでも大きすぎないように制限 */
-      aspect-ratio: 16 / 9; /* 横長比率に変更 */
-      border: 4px solid #d4af37;
-      box-shadow: 0 0 50px rgba(212, 175, 55, 0.5); /* 光を強くしてパーティー感UP */
-      border-radius: 12px;
+      width: 100%; max-width: 850px;
+      aspect-ratio: 16 / 9;
+      border: 5px solid #d4af37;
+      box-shadow: 0 0 60px rgba(212, 175, 55, 0.6);
+      border-radius: 15px;
       overflow: hidden;
       background: #000;
+      margin: 40px 0;
     }
-    .illust-frame img { width: 100%; height: 100%; object-fit: contain; /* イラスト全体を枠内に収める */ }
-    .credit { margin-top: 20px; color: #d4af37; font-weight: bold; font-size: 1.2rem; }
+    .illust-frame img { width: 100%; height: 100%; object-fit: contain; }
+    .credit { color: #d4af37; font-weight: bold; font-size: 1.3rem; text-shadow: 1px 1px 2px #000; }
   </style>
 </head>
 <body>
 
-  <div class="snow-container">
-    <div class="snowflake s1">❄</div>
-    <div class="snowflake s2">❅</div>
-    <div class="snowflake s3">❄</div>
-    <div class="snowflake s4">❅</div>
+  <div class="snow-container" id="snow-box"></div>
+
+  <div class="parallax-layer" id="layer-front">
+    <div class="item red-ball large" style="top: 10%; left: -5%; width: 200px; height: 200px;"></div>
+    <div class="item gold-ball large" style="top: 70%; right: -5%; width: 180px; height: 180px;"></div>
+    <div class="item" style="top: 40%; left: 80%;">🍭</div>
   </div>
 
-  <div class="ornament-layer" id="parallax-ornaments">
-    <div class="ornament ball-red"></div>
-    <div class="ornament ball-gold"></div>
+  <div class="parallax-layer" id="layer-mid">
+    <div class="item medium" style="top: 15%; right: 10%;">🎁</div>
+    <div class="item medium" style="top: 30%; left: 15%;">🔔</div>
+    <div class="item small" style="top: 45%; right: 25%;">⭐</div>
+    <div class="item medium" style="top: 60%; left: 5%;">🦌</div>
+    <div class="item small" style="top: 80%; right: 15%;">🕯️</div>
+    <div class="item medium" style="top: 85%; left: 40%;">🎅</div>
+    <div class="item small" style="top: 20%; left: 50%;">✨</div>
+    <div class="item small" style="top: 55%; left: 85%;">🍪</div>
   </div>
 
   <main>
     <section id="opening">
       <h1 class="neon-christmas">Merry Christmas Party!</h1>
-      <p style="margin-top:30px; opacity:0.8; font-size:1.2rem;">▼ Scroll to see the gift ▼</p>
+      <p style="margin-top:20px; font-size:1.1rem; letter-spacing: 2px;">Scroll to find the treasures... ▼</p>
     </section>
 
     <section id="illust-section">
@@ -108,15 +114,31 @@
   </main>
 
   <script>
-    // パララックス制御（カクカク解消版）
-    const layer = document.getElementById('parallax-ornaments');
+    // 雪を自動生成
+    const snowBox = document.getElementById('snow-box');
+    const icons = ['❄', '❅', '❆', '✨'];
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement('div');
+      s.className = 'snowflake';
+      s.textContent = icons[Math.floor(Math.random() * icons.length)];
+      s.style.left = Math.random() * 100 + '%';
+      s.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
+      s.style.animationDuration = (Math.random() * 5 + 5) + 's';
+      s.style.animationDelay = (Math.random() * 5) + 's';
+      s.style.opacity = Math.random();
+      snowBox.appendChild(s);
+    }
+
+    // 多層パララックス制御
+    const front = document.getElementById('layer-front');
+    const mid = document.getElementById('layer-mid');
     let ticking = false;
 
     function updateParallax() {
-      const scrollY = window.pageYOffset;
-      // スクロールの0.7倍速で逆方向にスライド（少し速めて通過感を強調）
-      const moveY = scrollY * -0.7;
-      layer.style.transform = `translate3d(0, ${moveY}px, 0)`;
+      const y = window.pageYOffset;
+      // 手前は速く（0.8倍）、中景は少しゆっくり（0.4倍）
+      front.style.transform = `translate3d(0, ${y * -0.8}px, 0)`;
+      mid.style.transform = `translate3d(0, ${y * -0.4}px, 0)`;
       ticking = false;
     }
 
