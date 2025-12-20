@@ -2,85 +2,35 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>☕ ふらcafe LIVE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ふらcafe LIVE</title>
 <style>
-body { margin:0; padding:24px; font-family:system-ui,sans-serif; background: radial-gradient(circle at top,#1e293b,#020617); color:#e5e7eb; }
-h1 { text-align:center; margin-bottom:32px; letter-spacing:.08em; }
-.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
-.card { background: rgba(255,255,255,0.05); border-radius:20px; padding:18px; text-align:center; color:inherit; text-decoration:none; box-shadow:0 15px 40px rgba(0,0,0,.5); transition: transform .3s; }
-.card.live { outline: 2px solid #f43f5e; animation: pulse 1.4s infinite; }
-@keyframes pulse { 0% { box-shadow:0 0 0 0 rgba(244,63,94,.7);} 70% {box-shadow:0 0 0 14px rgba(244,63,94,0);} 100% {box-shadow:0 0 0 0 rgba(244,63,94,0);} }
-.icon { width:72px; max-width:100px; height:72px; border-radius:50%; object-fit:contain; margin-bottom:12px; background:#0f172a; }
-.name { font-size:18px; font-weight:bold; margin-bottom:6px; }
-.status { font-size:14px; opacity:.85; }
-.no-live { grid-column:1/-1; text-align:center; padding:60px 20px; font-size:1.2rem; background: rgba(255,255,255,0.06); border-radius:20px; box-shadow:0 0 30px rgba(150,180,255,0.15); }
-.no-live span { display:block; margin-top:10px; font-size:.9rem; opacity:.7; }
+  body { background:#111; color:#fff; font-family:sans-serif; text-align:center; }
+  .box {
+    display:none;
+    border:3px solid red;
+    margin:20px auto;
+    padding:10px;
+    max-width:480px;
+    border-radius:10px;
+  }
+  .label { color:red; font-weight:bold; margin-bottom:6px; }
+  img { width:100%; border-radius:8px; cursor:pointer; }
 </style>
 </head>
 <body>
 
-<h1>☕ ふらcafe LIVE</h1>
-<div class="grid" id="streams"></div>
+<h2>📡 配信中</h2>
 
-<script>
-// ===== メンバー定義 =====
-const members = [
-  { name:'若凪', url:'https://www.twitch.tv/wakanagi', api:'https://decapi.me/twitch/uptime/wakanagi', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-300x300.png', type:'twitch' },
-  { name:'柚茶', url:'https://www.twitch.tv/yuzucha08', api:'https://decapi.me/twitch/uptime/yuzucha08', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-300x300.png', type:'twitch' },
-  { name:'Lily00', url:'https://www.twitch.tv/lily00_flca', api:'https://decapi.me/twitch/uptime/lily00_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-300x300.png', type:'twitch' },
-  { name:'とるま', url:'https://www.twitch.tv/tourma_flca', api:'https://decapi.me/twitch/uptime/tourma_flca', icon:'https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-300x300.png', type:'twitch' },
-  { name:'ふらcafe YouTube', url:'https://www.youtube.com/@flatcafe_games/live', icon:'https://yt3.ggpht.com/ytc/UCAsCx41YE4mEIBCIAGOzFfA=s300-c-k-c0x00ffffff-no-rj', type:'youtube' }
-];
+<div class="box" id="ytBox">
+  <div class="label">🔴 YouTube LIVE</div>
+  <img id="ytThumb">
+</div>
 
-const container = document.getElementById('streams');
+<div class="box" id="twBox">
+  <div class="label">🔴 Twitch LIVE</div>
+  <img id="twThumb">
+</div>
 
-async function isTwitchLive(api){
-  try{
-    const res = await fetch(api);
-    const text = (await res.text()).toLowerCase();
-    return !(text.includes('offline') || text.includes('not live'));
-  } catch {
-    return false;
-  }
-}
-
-async function render(){
-  container.innerHTML = `<div class="no-live">☕ 今は配信していません<span>準備ができたら、またここに灯りがつきます</span></div>`;
-
-  try {
-    const twitchResults = await Promise.all(
-      members.filter(m=>m.type==='twitch').map(async m=>({...m, isLive: await isTwitchLive(m.api)}))
-    );
-
-    const liveTwitch = twitchResults.filter(m=>m.isLive);
-    const youtubeMembers = members.filter(m=>m.type==='youtube');
-
-    const liveMembers = [...liveTwitch, ...youtubeMembers];
-
-    if(liveMembers.length===0) return;
-
-    container.innerHTML='';
-    liveMembers.forEach(m=>{
-      const a = document.createElement('a');
-      a.href = m.url;
-      a.target='_blank';
-      a.className = 'card'+(m.isLive?' live':'');
-      a.innerHTML=`
-        <img class="icon" src="${m.icon}" alt="${m.name}">
-        <div class="name">${m.name}</div>
-        <div class="status">${m.type==='twitch' && m.isLive?'🔴 LIVE':'📺 配信ページへ'}</div>
-      `;
-      container.appendChild(a);
-    });
-  } catch(e){
-    console.error(e);
-  }
-}
-
-render();
-setInterval(render,60000);
-</script>
-
+<script src="live.js"></script>
 </body>
 </html>
