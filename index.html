@@ -18,7 +18,7 @@
     content: "";
     position: absolute;
     top:0; left:0; right:0; bottom:0;
-    background: rgba(0,0,0,0.3); /* 落ち着きのオーバーレイ */
+    background: rgba(0,0,0,0.3);
     z-index: -1;
   }
 
@@ -38,21 +38,34 @@
   }
 
   .card {
-    background: rgba(245, 240, 230, 0.9); /* 落ち着いたクリーム色 */
+    background: rgba(245, 240, 230, 0.9);
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     padding: 12px;
     width: 340px;
     text-align: center;
+    position: relative;
     transition: transform 0.2s;
   }
 
+  .card:hover { transform: scale(1.03); }
+
+  /* LIVE中 */
   .card.live {
     border: 2px solid #8B0000; /* ワインレッド */
   }
 
-  .card:hover {
-    transform: scale(1.03);
+  /* OFFLINE用 */
+  .card.offline {
+    border: 2px dashed #aaa;
+    background: rgba(200,195,180,0.6);
+    filter: grayscale(30%) blur(2px);
+    animation: pulseOffline 2s infinite;
+  }
+
+  @keyframes pulseOffline {
+    0%,100% {opacity:0.8;}
+    50% {opacity:0.6;}
   }
 
   .card img {
@@ -66,7 +79,7 @@
     font-size: 14px;
     margin-top: 8px;
     font-weight: bold;
-    color: #4B3832; /* ダークブラウン */
+    color: #4B3832;
   }
 
   .card .status {
@@ -75,7 +88,18 @@
     color: #555;
   }
 
-  @media(max-width: 400px){
+  /* OFFLINEバッジ */
+  .badge-offline {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(139,69,19,0.8);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+  }
+
+  @media(max-width:400px){
     .card { width: 90%; }
   }
 </style>
@@ -87,7 +111,10 @@
 <!-- YouTube -->
 <div class="container">
   <div class="card" id="youtube-card">
-    <img id="youtube-thumb" src="" alt="YouTube Live">
+    <div style="position:relative;">
+      <img id="youtube-thumb" src="" alt="YouTube Live">
+      <div class="badge-offline" style="display:none;">OFFLINE</div>
+    </div>
     <div class="title">YouTube: ふらcafe</div>
     <div class="status" id="youtube-status">読み込み中...</div>
   </div>
@@ -96,22 +123,34 @@
 <!-- Twitch -->
 <div class="container" id="twitch-container">
   <div class="card" data-channel="wakanagi">
-    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-150x150.png" alt="wakanagi">
+    <div style="position:relative;">
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-150x150.png" alt="wakanagi">
+      <div class="badge-offline" style="display:none;">OFFLINE</div>
+    </div>
     <div class="title">Twitch: 若凪</div>
     <div class="status">読み込み中...</div>
   </div>
   <div class="card" data-channel="yuzucha08">
-    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-150x150.png" alt="yuzucha08">
+    <div style="position:relative;">
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-150x150.png" alt="yuzucha08">
+      <div class="badge-offline" style="display:none;">OFFLINE</div>
+    </div>
     <div class="title">Twitch: 柚茶</div>
     <div class="status">読み込み中...</div>
   </div>
   <div class="card" data-channel="lily00_flca">
-    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-150x150.png" alt="Lily00">
+    <div style="position:relative;">
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-150x150.png" alt="Lily00">
+      <div class="badge-offline" style="display:none;">OFFLINE</div>
+    </div>
     <div class="title">Twitch: Lily00</div>
     <div class="status">読み込み中...</div>
   </div>
   <div class="card" data-channel="tourma_flca">
-    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-150x150.png" alt="とるま">
+    <div style="position:relative;">
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-150x150.png" alt="とるま">
+      <div class="badge-offline" style="display:none;">OFFLINE</div>
+    </div>
     <div class="title">Twitch: とるま</div>
     <div class="status">読み込み中...</div>
   </div>
@@ -130,27 +169,30 @@ async function checkYouTube() {
     const card = document.getElementById('youtube-card');
     const thumb = document.getElementById('youtube-thumb');
     const status = document.getElementById('youtube-status');
+    const badge = card.querySelector('.badge-offline');
 
     if (data.items && data.items.length > 0) {
       const vid = data.items[0];
       thumb.src = vid.snippet.thumbnails.medium.url;
       status.textContent = 'LIVE中！';
       card.classList.add('live');
-      thumb.parentElement.href = `https://www.youtube.com/watch?v=${vid.id.videoId}`;
+      card.classList.remove('offline');
+      badge.style.display = 'none';
     } else {
       thumb.src = YT_ICON;
       status.textContent = 'OFFLINE';
       card.classList.remove('live');
+      card.classList.add('offline');
+      badge.style.display = 'block';
     }
-  } catch (e) {
-    console.error(e);
-  }
+  } catch(e) { console.error(e); }
 }
 
 async function checkTwitch() {
   const cards = document.querySelectorAll('#twitch-container .card');
   for (const card of cards) {
     const channel = card.dataset.channel;
+    const badge = card.querySelector('.badge-offline');
     try {
       const res = await fetch(`https://decapi.me/twitch/uptime/${channel}`);
       const text = await res.text();
@@ -158,12 +200,14 @@ async function checkTwitch() {
       statusDiv.textContent = text;
       if (!text.includes('offline')) {
         card.classList.add('live');
+        card.classList.remove('offline');
+        badge.style.display = 'none';
       } else {
         card.classList.remove('live');
+        card.classList.add('offline');
+        badge.style.display = 'block';
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch(e) { console.error(e); }
   }
 }
 
