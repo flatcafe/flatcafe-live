@@ -18,77 +18,75 @@
     body {
       margin: 0;
       font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
-      /* 背景画像は固定(fixed)され、スクロールしても動かない */
+      /* 背景画像を固定し奥行きの基点にする */
       background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1950&q=80') no-repeat center center fixed;
       background-size: cover;
       color: #333;
       min-height: 100vh;
-      overflow-x: hidden; /* 横スクロール防止 */
+      overflow-x: hidden;
     }
 
     body::before {
       content: "";
       position: fixed; top:0; left:0; right:0; bottom:0;
       background: rgba(0,0,0,0.4);
-      z-index: -2; /* 背景画像より手前、ホコリより奥 */
+      z-index: -2;
     }
 
-    /* --- 【NEW】手前のホコリ（塵）レイヤー --- */
+    /* --- 手前の塵（ホコリ）レイヤー --- */
     .dust-layer {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; /* クリックを透過させる */
-      z-index: 100; /* 最前面に配置 */
-      opacity: 0.6; /* うっすらと表示 */
-      filter: blur(4px); /* 全体をぼかす */
+      /* 動きの余白として上下左右に広げる */
+      top: -15%; left: -10%; width: 120%; height: 130%;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.7;
+      filter: blur(2px); /* ほどよいピントのズレ */
       
-      /* CSSで塵のようなテクスチャを描画 */
+      /* 視認性を高めた塵のテクスチャ */
       background-image: 
-        radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
-        radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
-        radial-gradient(rgba(255,255,255,0.1) 2px, transparent 2px);
-      background-size: 
-        50px 50px,
-        120px 120px,
-        200px 200px;
-      background-position: 
-        0 0,
-        40px 60px,
-        130px 270px;
-      
-      /* 初期位置を少しずらしておく */
-      transform: translateY(0);
-      will-change: transform; /* アニメーションの最適化 */
+        radial-gradient(rgba(255,255,255,0.4) 2px, transparent 2px),
+        radial-gradient(rgba(255,255,255,0.3) 1.5px, transparent 1.5px),
+        radial-gradient(rgba(255,240,220,0.2) 3.5px, transparent 3.5px);
+      background-size: 110px 110px, 190px 190px, 260px 260px;
+      background-position: 0 0, 40px 60px, 130px 200px;
+      will-change: transform;
     }
 
-    /* --- ヘッダー（ネオン・改行なし・リボンなし） --- */
+    /* --- 静かなネオンヘッダー（改行なし・リボンなし） --- */
     h2 {
       text-align: center;
-      margin: 50px 0;
-      font-size: clamp(1.1rem, 5.5vw, 2.4rem);
+      margin: 60px 0;
+      font-size: clamp(1.1rem, 5.8vw, 2.5rem); /* 極小画面でも1行を維持 */
       white-space: nowrap; 
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       color: #fff;
-      text-shadow: 0 0 7px #fff, 0 0 15px #ff0055, 0 0 30px #ff0055;
-      position: relative; z-index: 1; /* コンテンツをホコリより奥にする場合 */
+      /* 点滅なしの品のある発光 */
+      text-shadow:
+        0 0 7px #fff,
+        0 0 15px #ff0055,
+        0 0 30px #ff0055;
+      position: relative;
+      z-index: 1;
     }
 
     /* --- レイアウト --- */
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      gap: 24px;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px 40px;
-      position: relative; z-index: 1; /* コンテンツをホコリより奥にする場合 */
+      padding: 0 20px 60px;
+      position: relative;
+      z-index: 1;
     }
 
     /* --- カードデザイン --- */
     .card {
-      border-radius: 16px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      padding: 15px;
+      border-radius: 18px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+      padding: 16px;
       text-align: center;
       position: relative;
       transition: transform 0.3s ease;
@@ -101,19 +99,19 @@
       background: #fff;
     }
 
-    .card:hover { transform: translateY(-5px); }
+    .card:hover { transform: translateY(-6px); }
 
     .card.live {
       border-color: #ff0000;
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
     }
 
     .img-container {
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #e0e0e0;
-      border-radius: 10px;
-      margin-bottom: 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
       overflow: hidden;
       position: relative;
       display: flex;
@@ -122,11 +120,10 @@
     }
 
     .card img {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: cover;
       display: block;
-      transition: opacity 0.4s;
+      transition: opacity 0.5s;
       opacity: 0;
       z-index: 2;
     }
@@ -136,30 +133,28 @@
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       background-color: #d7ccc8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       color: #5d4037;
       font-weight: bold;
       z-index: 1;
       opacity: 1;
-      transition: opacity 0.4s;
+      transition: opacity 0.5s;
     }
     .card.live .offline-placeholder { opacity: 0; }
 
-    .offline-content { animation: float 3s ease-in-out infinite; }
-    .offline-icon { font-size: 2.2rem; margin-bottom: 5px; }
+    .offline-content { animation: float 3.5s ease-in-out infinite; }
+    .offline-icon { font-size: 2.4rem; margin-bottom: 6px; }
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-12px); }
     }
 
     .title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin: 5px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 6px 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -167,22 +162,23 @@
     }
 
     .status {
-      font-size: 0.9rem;
-      opacity: 0.9;
+      font-size: 0.95rem;
+      opacity: 0.95;
       font-weight: 500;
     }
 
     .badge-offline {
       position: absolute;
-      top: 10px; right: 10px;
-      background: rgba(0,0,0,0.6);
+      top: 12px; right: 12px;
+      background: rgba(0,0,0,0.65);
       color: #fff;
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 20px;
       z-index: 3;
     }
 
+    /* 個別カラー（高コントラスト調整済み） */
     .card-yt { background: var(--bg-yt); color: var(--text-yt); }
     .card-waka { background: var(--bg-waka); color: var(--text-waka); }
     .card-yuzu { background: var(--bg-yuzu); color: var(--text-yuzu); }
@@ -198,14 +194,12 @@
 
 <div class="dust-layer" id="dust-layer"></div>
 
-<h2 id="portal-header">ふらっとcafe ライブ配信ポータル</h2>
+<h2>ふらっとcafe ライブ配信ポータル</h2>
 
 <div class="container" id="portal-container">
   <a href="https://www.youtube.com/@flatcafe_games/live" target="_blank" class="card card-yt" id="yt-card">
     <div class="img-container">
-      <div class="offline-placeholder" id="yt-offline">
-        <div class="offline-content"><div class="offline-icon">☕</div><div>CLOSED</div></div>
-      </div>
+      <div class="offline-placeholder"><div class="offline-content"><div class="offline-icon">☕</div><div>CLOSED</div></div></div>
       <img id="yt-thumb" src="" alt="YouTube">
       <div class="badge-offline">CLOSED</div>
     </div>
@@ -215,9 +209,7 @@
 
   <a href="https://www.twitch.tv/wakanagi" target="_blank" class="card card-waka" data-channel="wakanagi">
     <div class="img-container">
-      <div class="offline-placeholder">
-        <div class="offline-content"><div class="offline-icon">💤</div><div>準備中</div></div>
-      </div>
+      <div class="offline-placeholder"><div class="offline-content"><div class="offline-icon">💤</div><div>準備中</div></div></div>
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-150x150.png" alt="若凪">
       <div class="badge-offline">閉店中</div>
     </div>
@@ -227,9 +219,7 @@
 
   <a href="https://www.twitch.tv/yuzucha08" target="_blank" class="card card-yuzu" data-channel="yuzucha08">
     <div class="img-container">
-      <div class="offline-placeholder">
-        <div class="offline-content"><div class="offline-icon">🍋</div><div>準備中</div></div>
-      </div>
+      <div class="offline-placeholder"><div class="offline-content"><div class="offline-icon">🍋</div><div>準備中</div></div></div>
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-150x150.png" alt="柚茶">
       <div class="badge-offline">閉店中</div>
     </div>
@@ -239,9 +229,7 @@
 
   <a href="https://www.twitch.tv/lily00_flca" target="_blank" class="card card-lily" data-channel="lily00_flca">
     <div class="img-container">
-      <div class="offline-placeholder">
-        <div class="offline-content"><div class="offline-icon">🌹</div><div>準備中</div></div>
-      </div>
+      <div class="offline-placeholder"><div class="offline-content"><div class="offline-icon">🌹</div><div>準備中</div></div></div>
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-150x150.png" alt="Lily00">
       <div class="badge-offline">閉店中</div>
     </div>
@@ -251,9 +239,7 @@
 
   <a href="https://www.twitch.tv/tourma_flca" target="_blank" class="card card-toru" data-channel="tourma_flca">
     <div class="img-container">
-      <div class="offline-placeholder">
-        <div class="offline-content"><div class="offline-icon">🌙</div><div>準備中</div></div>
-      </div>
+      <div class="offline-placeholder"><div class="offline-content"><div class="offline-icon">🌙</div><div>準備中</div></div></div>
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-150x150.png" alt="とるま">
       <div class="badge-offline">閉店中</div>
     </div>
@@ -263,9 +249,13 @@
 </div>
 
 <script>
-const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE'; 
+/**
+ * 設定：APIキーをここに入力
+ */
+const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE';
 const YT_CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
 
+// API通信（タイムアウト付き）
 async function fetchWithTimeout(resource, options = {}) {
   const { timeout = 5000 } = options;
   const controller = new AbortController();
@@ -280,6 +270,7 @@ async function fetchWithTimeout(resource, options = {}) {
   }
 }
 
+// YouTubeステータス確認
 async function checkYouTube() {
   const card = document.getElementById('yt-card');
   const thumb = document.getElementById('yt-thumb');
@@ -290,16 +281,13 @@ async function checkYouTube() {
     if (YT_API_KEY.includes('ここに')) throw new Error('Key not set');
     const res = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YT_CHANNEL_ID}&type=video&eventType=live&liveBroadcastContent=live&maxResults=1&key=${YT_API_KEY}`);
     const data = await res.json();
-
     if (data.items && data.items.length > 0) {
       thumb.src = data.items[0].snippet.thumbnails.medium.url;
       thumb.classList.add('show');
       status.innerHTML = '● LIVE配信中！';
       card.classList.add('live');
       badge.style.display = 'none';
-    } else {
-      throw new Error('Offline');
-    }
+    } else { throw new Error('Offline'); }
   } catch (e) {
     status.textContent = '準備中';
     card.classList.remove('live');
@@ -308,6 +296,7 @@ async function checkYouTube() {
   }
 }
 
+// Twitchステータス確認
 async function checkTwitch() {
   const cards = document.querySelectorAll('#portal-container .card[data-channel]');
   await Promise.all(Array.from(cards).map(async (card) => {
@@ -324,9 +313,7 @@ async function checkTwitch() {
         statusDiv.innerHTML = `● 配信中: ${text}`;
         img.classList.add('show');
         badge.style.display = 'none';
-      } else {
-        throw new Error('Offline');
-      }
+      } else { throw new Error('Offline'); }
     } catch(e) {
       statusDiv.textContent = '準備中';
       card.classList.remove('live');
@@ -336,33 +323,25 @@ async function checkTwitch() {
   }));
 }
 
-function refreshAll() {
-  checkYouTube();
-  checkTwitch();
-}
-
-// --- 【NEW】パララックス効果のスクリプト ---
+// パララックス（塵レイヤー）の制御
 const dustLayer = document.getElementById('dust-layer');
-let lastScrollY = 0;
 let ticking = false;
 
 function updateParallax() {
-  const scrollY = window.scrollY;
-  // スクロール量の20%だけ逆方向に動かす（数値を変えると速度が変わります）
-  const moveY = scrollY * -0.2; 
-  dustLayer.style.transform = `translateY(${moveY}px)`;
-  lastScrollY = scrollY;
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+  const moveY = scrollY * -0.3; // スクロール量の30%分逆方向に動く
+  dustLayer.style.transform = `translate3d(0, ${moveY}px, 0)`;
   ticking = false;
 }
 
 window.addEventListener('scroll', () => {
-  lastScrollY = window.scrollY;
   if (!ticking) {
     window.requestAnimationFrame(updateParallax);
     ticking = true;
   }
 });
-// -------------------------------------------
+
+function refreshAll() { checkYouTube(); checkTwitch(); }
 
 window.addEventListener('load', () => {
   refreshAll();
