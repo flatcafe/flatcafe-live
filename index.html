@@ -66,12 +66,14 @@
   const container = document.getElementById('streams');
 
   // ===== Twitch ライブ判定 =====
-  async function isTwitchLive(api) {
+  async function isTwitchLive(api, name) {
     try {
       const res = await fetch(api);
       const text = (await res.text()).toLowerCase();
+      console.log(`[Twitch] ${name}:`, text); // デバッグ用
       return !(text.includes('offline') || text.includes('not live'));
-    } catch {
+    } catch(err) {
+      console.error('[Twitch判定エラー]', name, err);
       return false;
     }
   }
@@ -82,11 +84,15 @@
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YT_CHANNEL_ID}&eventType=live&type=video&key=${YT_API_KEY}`;
       const res = await fetch(url);
       const data = await res.json();
+      console.log('[YouTube]', data); // デバッグ用
+
       if (data.items && data.items.length > 0) {
-        return { isLive:true, videoId:data.items[0].id.videoId };
+        const video = data.items.find(item => item.id && item.id.videoId);
+        if(video) return { isLive:true, videoId: video.id.videoId };
       }
       return { isLive:false };
-    } catch {
+    } catch(err) {
+      console.error('[YouTube判定エラー]', err);
       return { isLive:false };
     }
   }
@@ -102,7 +108,7 @@
     try {
       // Twitch判定
       const twitchResults = await Promise.all(
-        members.filter(m => m.type==='twitch').map(async m => ({ ...m, isLive: await isTwitchLive(m.api) }))
+        members.filter(m => m.type==='twitch').map(async m => ({ ...m, isLive: await isTwitchLive(m.api, m.name) }))
       );
 
       // YouTube判定
@@ -110,7 +116,10 @@
       const ytLive = await isYouTubeLive();
       if (ytLive.isLive) ytMember.isLive = true;
 
-      const liveMembers = [...twitchResults.filter(m=>m.isLive), ...(ytLive.isLive?[{...ytMember,status:`🔴 LIVE`, videoId: ytLive.videoId}]:[])];
+      const liveMembers = [
+        ...twitchResults.filter(m => m.isLive),
+        ...(ytLive.isLive ? [{ ...ytMember, videoId: ytLive.videoId }] : [])
+      ];
 
       if (liveMembers.length === 0) return;
 
@@ -120,12 +129,7 @@
         const a = document.createElement('a');
         a.target='_blank';
         a.className = 'card live';
-
-        if(m.type==='youtube') {
-          a.href = `https://www.youtube.com/watch?v=${m.videoId}`;
-        } else {
-          a.href = m.url;
-        }
+        a.href = m.type==='youtube' ? `https://www.youtube.com/watch?v=${m.videoId}` : m.url;
 
         a.innerHTML = `
           <img class="icon" src="${m.icon}" alt="${m.name}">
