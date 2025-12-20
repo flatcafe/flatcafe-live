@@ -12,15 +12,12 @@
       margin: 0;
       padding: 20px;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
-    }
+    h1 { text-align: center; margin-bottom: 24px; }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 16px;
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 0 auto;
     }
     .card {
@@ -31,9 +28,7 @@
       border: 2px solid transparent;
       transition: 0.3s;
     }
-    .card.live {
-      border-color: #ef4444;
-    }
+    .card.live { border-color: #ef4444; }
     .header {
       display: flex;
       align-items: center;
@@ -41,30 +36,23 @@
       margin-bottom: 12px;
     }
     .icon {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
     }
-    .name {
-      font-size: 18px;
-      font-weight: 700;
+    .name { font-size: 18px; font-weight: 700; }
+    .status { font-size: 14px; margin-top: 4px; }
+    .live-badge { color: #ef4444; font-weight: 700; }
+    .offline { color: #94a3b8; }
+    .thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #020617;
+      margin: 10px 0 8px;
     }
-    .status {
-      font-size: 14px;
-      margin-top: 6px;
-    }
-    .live-badge {
-      color: #ef4444;
-      font-weight: 700;
-    }
-    .offline {
-      color: #94a3b8;
-    }
-    a {
-      color: #38bdf8;
-      text-decoration: none;
-      font-size: 14px;
-    }
+    a { color: #38bdf8; text-decoration: none; font-size: 14px; }
     .footer {
       text-align: center;
       margin-top: 32px;
@@ -86,67 +74,75 @@
           <div class="status" id="youtube-status">判定中…</div>
         </div>
       </div>
+      <img id="youtube-thumb" class="thumb" style="display:none" />
       <a href="https://www.youtube.com/@flatcafe_games/live" target="_blank">配信ページへ</a>
     </div>
 
-    <!-- Twitch members -->
+    <!-- Twitch cards -->
     <div class="card" id="wakanagi">
       <div class="name">若凪（Twitch）</div>
       <div class="status">判定中…</div>
+      <img class="thumb" style="display:none" />
       <a href="https://www.twitch.tv/wakanagi" target="_blank">チャンネルへ</a>
     </div>
 
     <div class="card" id="yuzucha08">
       <div class="name">柚茶（Twitch）</div>
       <div class="status">判定中…</div>
+      <img class="thumb" style="display:none" />
       <a href="https://www.twitch.tv/yuzucha08" target="_blank">チャンネルへ</a>
     </div>
 
     <div class="card" id="lily00_flca">
       <div class="name">Lily00（Twitch）</div>
       <div class="status">判定中…</div>
+      <img class="thumb" style="display:none" />
       <a href="https://www.twitch.tv/lily00_flca" target="_blank">チャンネルへ</a>
     </div>
 
     <div class="card" id="tourma_flca">
       <div class="name">とるま（Twitch）</div>
       <div class="status">判定中…</div>
+      <img class="thumb" style="display:none" />
       <a href="https://www.twitch.tv/tourma_flca" target="_blank">チャンネルへ</a>
     </div>
   </div>
 
-  <div class="footer">
-    ※ 1分ごとに自動更新 / GitHub Pages 対応
-  </div>
+  <div class="footer">※ 1分ごとに自動更新 / GitHub Pages 対応</div>
 
 <script>
 // =====================
-// YouTube Live 判定
+// YouTube Live + Thumbnail
 // =====================
 const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE';
 const CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
 
 async function checkYouTube() {
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&type=video&eventType=live&liveBroadcastContent=live&maxResults=1&key=${YT_API_KEY}`;
+  const status = document.getElementById('youtube-status');
+  const card = document.getElementById('youtube-card');
+  const thumb = document.getElementById('youtube-thumb');
   try {
     const res = await fetch(url);
     const data = await res.json();
-    const status = document.getElementById('youtube-status');
-    const card = document.getElementById('youtube-card');
     if (data.items && data.items.length > 0) {
+      const item = data.items[0];
       status.innerHTML = '<span class="live-badge">🔴 LIVE（配信中）</span>';
       card.classList.add('live');
+      thumb.src = item.snippet.thumbnails.medium.url;
+      thumb.style.display = 'block';
     } else {
       status.innerHTML = '<span class="offline">オフライン</span>';
       card.classList.remove('live');
+      thumb.style.display = 'none';
     }
-  } catch (e) {
-    document.getElementById('youtube-status').textContent = '取得失敗';
+  } catch {
+    status.textContent = '取得失敗';
   }
 }
 
 // =====================
-// Twitch 判定（DecAPI）
+// Twitch Live + Thumbnail
 // =====================
 const twitchChannels = [
   'wakanagi',
@@ -158,15 +154,19 @@ const twitchChannels = [
 async function checkTwitch(channel) {
   const card = document.getElementById(channel);
   const statusEl = card.querySelector('.status');
+  const thumb = card.querySelector('.thumb');
   try {
     const res = await fetch(`https://decapi.me/twitch/uptime/${channel}`);
     const text = await res.text();
     if (!text.includes('offline')) {
       statusEl.innerHTML = `<span class="live-badge">🔴 LIVE（${text}）</span>`;
       card.classList.add('live');
+      thumb.src = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel}-440x248.jpg?rand=${Date.now()}`;
+      thumb.style.display = 'block';
     } else {
       statusEl.innerHTML = '<span class="offline">オフライン</span>';
       card.classList.remove('live');
+      thumb.style.display = 'none';
     }
   } catch {
     statusEl.textContent = '取得失敗';
