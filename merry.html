@@ -3,247 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Merry Christmas - Special Illustration Showcase</title>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+  <title>Merry Christmas Party - とるま Illustration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=M+PLUS+Rounded+1c:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* --- 基本設定 --- */
-    :root {
-      --bg-color: #0a1a1a; /* 深い森のようなダークグリーン */
-      --text-gold: #d4af37;
-      --accent-red: #c70039;
-    }
+    /* --- 全体設定 --- */
     body {
-      margin: 0;
+      margin: 0; padding: 0;
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      background-color: var(--bg-color);
-      /* 背景にうっすらと雪のテクスチャなどを敷く */
-      background-image: radial-gradient(circle at 50% 50%, rgba(20, 40, 40, 1) 0%, var(--bg-color) 100%);
+      background: radial-gradient(circle, #0a2a1a 0%, #051510 100%);
       color: #fff;
-      overflow-x: hidden; /* 横スクロール防止 */
+      overflow-x: hidden;
+      min-height: 200vh; /* スクロール用の高さを確保 */
     }
 
-    /* --- パララックス装飾レイヤー --- */
-    /* 共通設定：固定配置、クリック透過 */
-    .parallax-layer {
+    /* --- パーティー演出：舞い落ちる雪 --- */
+    .snow-container {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      pointer-events: none; z-index: 1;
+    }
+    .snowflake {
+      position: absolute; top: -10%; color: #fff;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh); }
+    }
+    /* 雪のサイズ・場所・速度をランダムに */
+    .s1 { left: 10%; font-size: 1.2rem; animation-duration: 8s; animation-delay: 0s; }
+    .s2 { left: 30%; font-size: 0.8rem; animation-duration: 12s; animation-delay: 2s; }
+    .s3 { left: 70%; font-size: 1.5rem; animation-duration: 6s; animation-delay: 4s; }
+    .s4 { left: 90%; font-size: 1rem; animation-duration: 10s; animation-delay: 1s; }
+
+    /* --- 最前面レイヤー：ブラーオーナメント --- */
+    .ornament-layer {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: -20%; left: 0; width: 100%; height: 140%;
       pointer-events: none;
-      will-change: transform; /* アニメーション最適化 */
+      z-index: 9999;
+      will-change: transform; /* スムーズな動きの鍵 */
     }
+    .ornament {
+      position: absolute; border-radius: 50%; filter: blur(6px);
+    }
+    .ball-red { top: 15%; left: -5%; width: 200px; height: 200px; background: radial-gradient(circle at 30% 30%, #ff4d4d, #c70039); opacity: 0.7; }
+    .ball-gold { top: 70%; right: -8%; width: 150px; height: 150px; background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b); opacity: 0.6; }
 
-    /* 最前面レイヤー（手前の大きなボケた装飾） */
-    .layer-foreground {
-      z-index: 10; /* コンテンツより手前 */
-      filter: blur(8px); /* 強いブラー */
-      opacity: 0.8;
-    }
-    /* 装飾アイテムの配置（例：CSSで描画するオーナメント） */
-    .deco-item {
-      position: absolute;
-      border-radius: 50%;
-      box-shadow: 0 0 15px rgba(255,255,255,0.2);
-    }
-    .fg-1 { /* 左下の大きな赤い玉 */
-      bottom: -10%; left: -5%; width: 150px; height: 150px;
-      background: radial-gradient(circle at 30% 30%, #ff4d4d, var(--accent-red));
-    }
-    .fg-2 { /* 右上の大きな金の玉 */
-      top: -5%; right: -10%; width: 200px; height: 200px;
-      background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
-    }
-    .fg-3 { /* 右下のリボンっぽい光 */
-      bottom: 20%; right: -5%; width: 120px; height: 120px;
-      background: rgba(255, 215, 0, 0.4);
-      clip-path: polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%);
-      transform: rotate(-30deg);
-    }
+    /* --- コンテンツセクション --- */
+    section { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; }
 
-
-    /* 中景レイヤー（少し奥、軽いブラー） */
-    .layer-midground {
-      z-index: 5; /* コンテンツより手前、最前面より奥 */
-      filter: blur(3px);
-      opacity: 0.6;
-    }
-    .mg-1 { /* 左上、中くらいの玉 */
-      top: 15%; left: 10%; width: 80px; height: 80px;
-      background: radial-gradient(circle at 30% 30%, #fff, #silver);
-    }
-    .mg-2 { /* 右中央、雪の結晶イメージ */
-      top: 50%; right: 15%; width: 60px; height: 60px;
-      background: transparent;
-      border: 2px solid rgba(255,255,255,0.5);
-      transform: rotate(45deg);
-    }
-
-
-    /* --- コンテンツエリア --- */
-    /* 各セクションは画面いっぱいの高さを持つ */
-    section {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      z-index: 1; /* 装飾より奥 */
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    /* オープニングセクション */
-    #opening {
-      flex-direction: column;
-      text-align: center;
-    }
-    /* おしゃれなメリークリスマス文字 */
-    h1.merry-christmas {
-      font-family: 'Great Vibes', cursive; /* 筆記体フォント */
-      font-size: clamp(4rem, 10vw, 8rem); /* 画面幅に合わせて可変 */
-      color: var(--text-gold);
-      margin: 0;
-      /* 輝くゴールドのテキストシャドウ */
-      text-shadow: 
-        0 0 10px rgba(212, 175, 55, 0.5),
-        0 0 20px rgba(212, 175, 55, 0.3),
-        0 0 40px rgba(212, 175, 55, 0.2);
-      animation: glow 3s ease-in-out infinite alternate;
+    /* メリークリスマスおしゃれ文字 */
+    .neon-christmas {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(3.5rem, 15vw, 8rem);
+      color: #fff;
+      text-shadow: 0 0 10px #fff, 0 0 20px #ff0055, 0 0 40px #ff0055;
+      white-space: nowrap;
+      animation: glow 2s ease-in-out infinite alternate;
     }
     @keyframes glow {
-      from { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); }
-      to   { text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.3); }
-    }
-    .scroll-hint {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      opacity: 0.8;
-      animation: bounce 2s infinite;
-    }
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-10px); }
-      60% { transform: translateY(-5px); }
+      from { text-shadow: 0 0 10px #fff, 0 0 20px #ff0055; }
+      to { text-shadow: 0 0 20px #fff, 0 0 40px #ff0055, 0 0 60px #ff0055; }
     }
 
-
-    /* メインコンテンツセクション（イラスト表示） */
-    #main-content {
-      flex-direction: column;
-      /* イラストの周りの装飾（静的な背景） */
-      background-image: 
-        radial-gradient(circle at center, rgba(255,215,0,0.1) 0%, transparent 70%), /* 中央をほんのり明るく */
-        url('https://www.transparenttextures.com/patterns/snow.png'); /* 雪のテクスチャ（任意） */
-      background-repeat: no-repeat, repeat;
-      background-position: center, center;
-    }
-    /* イラストを囲むフレーム */
-    .illustration-frame {
-      position: relative;
-      /* サンプル画像の比率 (1080x1920 = 9:16) に合わせる */
-      width: auto;
-      max-width: 90vw; /* 画面幅の90%まで */
-      height: auto;
-      max-height: 85vh; /* 画面高さの85%まで */
-      aspect-ratio: 9 / 16; /* 縦長比率を固定 */
-      
-      box-shadow: 
-        0 0 30px rgba(212, 175, 55, 0.3), /* ゴールドの光 */
-        0 20px 50px rgba(0,0,0,0.5); /* 深い影 */
+    /* イラストフレーム（横長対応：16:9） */
+    .illust-frame {
+      width: 90vw; max-width: 800px; /* PCでも大きすぎないように制限 */
+      aspect-ratio: 16 / 9; /* 横長比率に変更 */
+      border: 4px solid #d4af37;
+      box-shadow: 0 0 50px rgba(212, 175, 55, 0.5); /* 光を強くしてパーティー感UP */
       border-radius: 12px;
       overflow: hidden;
-      border: 3px solid rgba(212, 175, 55, 0.5); /* ゴールドの枠線 */
+      background: #000;
     }
-    /* メイン画像 */
-    .illustration-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover; /* 枠に合わせてトリミング表示 */
-      display: block;
-    }
-    /* イラスト下のクレジット */
-    .credit {
-      margin-top: 1.5rem;
-      font-size: 1.2rem;
-      color: var(--text-gold);
-      font-weight: bold;
-    }
-
-    /* 周りの固定装飾（ピントが合っているもの） */
-    .static-deco {
-      position: absolute;
-      pointer-events: none;
-      z-index: 2; /* イラストより手前、パララックスより奥 */
-    }
-    .sd-top { /* 上部のガーランド風 */
-      top: -20px; left: 50%; transform: translateX(-50%);
-      width: 80%; height: 50px;
-      background: url('https://img.icons8.com/dusk/64/null/christmas-garland.png') repeat-x center / contain;
-      opacity: 0.8;
-    }
-    .sd-bottom-left { /* 左下のポインセチア */
-      bottom: 20px; left: 20px; width: 80px; height: 80px;
-      background: url('https://img.icons8.com/color/96/null/poinsettia.png') no-repeat center / contain;
-    }
-    .sd-bottom-right { /* 右下のキャンドル */
-      bottom: 20px; right: 20px; width: 60px; height: 80px;
-      background: url('https://img.icons8.com/color/96/null/christmas-candle.png') no-repeat center / contain;
-    }
-
+    .illust-frame img { width: 100%; height: 100%; object-fit: contain; /* イラスト全体を枠内に収める */ }
+    .credit { margin-top: 20px; color: #d4af37; font-weight: bold; font-size: 1.2rem; }
   </style>
 </head>
 <body>
 
-  <div class="parallax-layer layer-foreground" id="layer-fg">
-    <div class="deco-item fg-1"></div>
-    <div class="deco-item fg-2"></div>
-    <div class="deco-item fg-3"></div>
-  </div>
-  <div class="parallax-layer layer-midground" id="layer-mg">
-    <div class="deco-item mg-1"></div>
-    <div class="deco-item mg-2"></div>
+  <div class="snow-container">
+    <div class="snowflake s1">❄</div>
+    <div class="snowflake s2">❅</div>
+    <div class="snowflake s3">❄</div>
+    <div class="snowflake s4">❅</div>
   </div>
 
+  <div class="ornament-layer" id="parallax-ornaments">
+    <div class="ornament ball-red"></div>
+    <div class="ornament ball-gold"></div>
+  </div>
 
-  <section id="opening">
-    <h1 class="merry-christmas">Merry Christmas</h1>
-    <p class="scroll-hint">Scroll Down ▼</p>
-  </section>
+  <main>
+    <section id="opening">
+      <h1 class="neon-christmas">Merry Christmas Party!</h1>
+      <p style="margin-top:30px; opacity:0.8; font-size:1.2rem;">▼ Scroll to see the gift ▼</p>
+    </section>
 
-  <section id="main-content">
-    <div class="static-deco sd-top"></div>
-    <div class="static-deco sd-bottom-left"></div>
-    <div class="static-deco sd-bottom-right"></div>
-
-    <div class="illustration-frame">
-      <img src="https://via.placeholder.com/1080x1920/c70039/fff?text=Wonderful+Illustration+by+Toruma" alt="とるまさんのクリスマスイラスト">
-    </div>
-    <p class="credit">Illustrated by とるま</p>
-  </section>
-
+    <section id="illust-section">
+      <div class="illust-frame">
+        <img src="merrychristmas2025" alt="とるまクリスマスイラスト">
+      </div>
+      <p class="credit">Special Illustration by とるま</p>
+    </section>
+  </main>
 
   <script>
-    // パララックス効果の制御
-    const layerFG = document.getElementById('layer-fg');
-    const layerMG = document.getElementById('layer-mg');
+    // パララックス制御（カクカク解消版）
+    const layer = document.getElementById('parallax-ornaments');
     let ticking = false;
 
     function updateParallax() {
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-
-      // スクロール量に応じて、レイヤーを「上」へ動かす
-      // 手前（FG）はスクロール量の 80% 分動く（速い）
-      // 中景（MG）はスクロール量の 40% 分動く（中くらい）
-      // 係数を変えることで、奥行き感を調整できます。
-      const moveFG = scrollY * -0.8; 
-      const moveMG = scrollY * -0.4;
-
-      layerFG.style.transform = `translate3d(0, ${moveFG}px, 0)`;
-      layerMG.style.transform = `translate3d(0, ${moveMG}px, 0)`;
-
+      const scrollY = window.pageYOffset;
+      // スクロールの0.7倍速で逆方向にスライド（少し速めて通過感を強調）
+      const moveY = scrollY * -0.7;
+      layer.style.transform = `translate3d(0, ${moveY}px, 0)`;
       ticking = false;
     }
 
-    // スクロールイベントの最適化
     window.addEventListener('scroll', () => {
       if (!ticking) {
         window.requestAnimationFrame(updateParallax);
@@ -251,6 +127,5 @@
       }
     });
   </script>
-
 </body>
 </html>
