@@ -18,33 +18,59 @@
     body {
       margin: 0;
       font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
+      /* 背景画像は固定(fixed)され、スクロールしても動かない */
       background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1950&q=80') no-repeat center center fixed;
       background-size: cover;
       color: #333;
       min-height: 100vh;
+      overflow-x: hidden; /* 横スクロール防止 */
     }
 
     body::before {
       content: "";
       position: fixed; top:0; left:0; right:0; bottom:0;
       background: rgba(0,0,0,0.4);
-      z-index: -1;
+      z-index: -2; /* 背景画像より手前、ホコリより奥 */
+    }
+
+    /* --- 【NEW】手前のホコリ（塵）レイヤー --- */
+    .dust-layer {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; /* クリックを透過させる */
+      z-index: 100; /* 最前面に配置 */
+      opacity: 0.6; /* うっすらと表示 */
+      filter: blur(4px); /* 全体をぼかす */
+      
+      /* CSSで塵のようなテクスチャを描画 */
+      background-image: 
+        radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
+        radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+        radial-gradient(rgba(255,255,255,0.1) 2px, transparent 2px);
+      background-size: 
+        50px 50px,
+        120px 120px,
+        200px 200px;
+      background-position: 
+        0 0,
+        40px 60px,
+        130px 270px;
+      
+      /* 初期位置を少しずらしておく */
+      transform: translateY(0);
+      will-change: transform; /* アニメーションの最適化 */
     }
 
     /* --- ヘッダー（ネオン・改行なし・リボンなし） --- */
     h2 {
       text-align: center;
       margin: 50px 0;
-      /* 画面幅に合わせて自動調整し、改行を禁止する */
       font-size: clamp(1.1rem, 5.5vw, 2.4rem);
       white-space: nowrap; 
       letter-spacing: 0.1em;
       color: #fff;
-      /* 点滅なしの静かな発光 */
-      text-shadow:
-        0 0 7px #fff,
-        0 0 15px #ff0055,
-        0 0 30px #ff0055;
+      text-shadow: 0 0 7px #fff, 0 0 15px #ff0055, 0 0 30px #ff0055;
+      position: relative; z-index: 1; /* コンテンツをホコリより奥にする場合 */
     }
 
     /* --- レイアウト --- */
@@ -55,6 +81,7 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px 40px;
+      position: relative; z-index: 1; /* コンテンツをホコリより奥にする場合 */
     }
 
     /* --- カードデザイン --- */
@@ -168,6 +195,8 @@
   </style>
 </head>
 <body>
+
+<div class="dust-layer" id="dust-layer"></div>
 
 <h2 id="portal-header">ふらっとcafe ライブ配信ポータル</h2>
 
@@ -311,6 +340,29 @@ function refreshAll() {
   checkYouTube();
   checkTwitch();
 }
+
+// --- 【NEW】パララックス効果のスクリプト ---
+const dustLayer = document.getElementById('dust-layer');
+let lastScrollY = 0;
+let ticking = false;
+
+function updateParallax() {
+  const scrollY = window.scrollY;
+  // スクロール量の20%だけ逆方向に動かす（数値を変えると速度が変わります）
+  const moveY = scrollY * -0.2; 
+  dustLayer.style.transform = `translateY(${moveY}px)`;
+  lastScrollY = scrollY;
+  ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+  lastScrollY = window.scrollY;
+  if (!ticking) {
+    window.requestAnimationFrame(updateParallax);
+    ticking = true;
+  }
+});
+// -------------------------------------------
 
 window.addEventListener('load', () => {
   refreshAll();
