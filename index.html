@@ -63,7 +63,7 @@
       align-items: center;
       border: 2px solid transparent;
       overflow: hidden;
-      background: #fff; /* デフォルト背景 */
+      background: #fff;
     }
 
     .card:hover {
@@ -71,22 +71,22 @@
       box-shadow: 0 15px 30px rgba(0,0,0,0.3);
     }
 
+    /* 配信中（ライブ）のスタイル */
     .card.live {
       border-color: #ff0000;
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4); }
       70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
       100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
     }
 
-    /* --- 画像エリア & アニメーション --- */
+    /* --- 画像エリア --- */
     .img-container {
       width: 100%;
       aspect-ratio: 16 / 9;
-      background: #eee;
+      background: #e0e0e0;
       border-radius: 10px;
       margin-bottom: 12px;
       overflow: hidden;
@@ -101,52 +101,39 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: opacity 0.3s;
-      opacity: 0; /* 初期状態は非表示 */
+      transition: opacity 0.4s;
+      opacity: 0; /* 初期は非表示 */
+      z-index: 2;
     }
     .card img.show { opacity: 1; }
 
-    /* 読み込み中スケルトン */
-    .skeleton {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      z-index: 2;
-    }
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-
-    /* 【NEW】閉店中プレースホルダー */
+    /* 閉店中・準備中アニメーション */
     .offline-placeholder {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background-color: #d7ccc8; /* 落ち着いたカフェオレ色 */
+      background-color: #d7ccc8;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: #5d4037;
       font-weight: bold;
-      opacity: 0;
-      transition: opacity 0.3s;
       z-index: 1;
+      opacity: 1; /* 初期は表示 */
+      transition: opacity 0.4s;
     }
-    .offline-placeholder.show { opacity: 1; }
+    /* ライブ中はプレースホルダーを隠す */
+    .card.live .offline-placeholder { opacity: 0; }
 
     .offline-content {
       animation: float 3s ease-in-out infinite;
     }
-    .offline-icon { font-size: 2rem; margin-bottom: 5px; }
+    .offline-icon { font-size: 2.2rem; margin-bottom: 5px; }
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-10px); }
     }
-
 
     /* --- テキスト --- */
     .title {
@@ -159,6 +146,7 @@
       font-size: 0.9rem;
       opacity: 0.9;
       font-weight: 500;
+      min-height: 1.2em;
     }
 
     .badge-offline {
@@ -191,7 +179,6 @@
 <div class="container" id="portal-container">
   <a href="https://www.youtube.com/@flatcafe_games/live" target="_blank" class="card card-yt" id="yt-card">
     <div class="img-container">
-      <div class="skeleton" id="yt-skeleton"></div>
       <div class="offline-placeholder" id="yt-offline">
         <div class="offline-content">
           <div class="offline-icon">☕</div>
@@ -199,111 +186,91 @@
         </div>
       </div>
       <img id="yt-thumb" src="" alt="YouTube">
-      <div class="badge-offline" style="display:none;">CLOSED</div>
+      <div class="badge-offline" id="yt-badge">CLOSED</div>
     </div>
     <div class="title">YouTube: ふらcafe</div>
-    <div class="status" id="yt-status">確認中...</div>
+    <div class="status" id="yt-status">準備中</div>
   </a>
 
   <a href="https://www.twitch.tv/wakanagi" target="_blank" class="card card-waka" data-channel="wakanagi">
     <div class="img-container">
-      <div class="skeleton"></div>
       <div class="offline-placeholder">
-        <div class="offline-content">
-          <div class="offline-icon">💤</div>
-          <div>準備中...</div>
-        </div>
+        <div class="offline-content"><div class="offline-icon">💤</div><div>準備中</div></div>
       </div>
-      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-150x150.png" alt="wakanagi">
-      <div class="badge-offline" style="display:none;">閉店中</div>
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-150x150.png" alt="若凪">
+      <div class="badge-offline">閉店中</div>
     </div>
     <div class="title">Twitch: 若凪</div>
-    <div class="status">確認中...</div>
+    <div class="status">準備中</div>
   </a>
 
   <a href="https://www.twitch.tv/yuzucha08" target="_blank" class="card card-yuzu" data-channel="yuzucha08">
     <div class="img-container">
-      <div class="skeleton"></div>
       <div class="offline-placeholder">
-        <div class="offline-content">
-          <div class="offline-icon">🍋</div>
-          <div>準備中...</div>
-        </div>
+        <div class="offline-content"><div class="offline-icon">🍋</div><div>準備中</div></div>
       </div>
-      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-150x150.png" alt="yuzucha08">
-      <div class="badge-offline" style="display:none;">閉店中</div>
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-150x150.png" alt="柚茶">
+      <div class="badge-offline">閉店中</div>
     </div>
     <div class="title">Twitch: 柚茶</div>
-    <div class="status">確認中...</div>
+    <div class="status">準備中</div>
   </a>
 
   <a href="https://www.twitch.tv/lily00_flca" target="_blank" class="card card-lily" data-channel="lily00_flca">
     <div class="img-container">
-      <div class="skeleton"></div>
       <div class="offline-placeholder">
-        <div class="offline-content">
-          <div class="offline-icon">🌹</div>
-          <div>準備中...</div>
-        </div>
+        <div class="offline-content"><div class="offline-icon">🌹</div><div>準備中</div></div>
       </div>
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-150x150.png" alt="Lily00">
-      <div class="badge-offline" style="display:none;">閉店中</div>
+      <div class="badge-offline">閉店中</div>
     </div>
     <div class="title">Twitch: Lily00</div>
-    <div class="status">確認中...</div>
+    <div class="status">準備中</div>
   </a>
 
   <a href="https://www.twitch.tv/tourma_flca" target="_blank" class="card card-toru" data-channel="tourma_flca">
     <div class="img-container">
-      <div class="skeleton"></div>
       <div class="offline-placeholder">
-        <div class="offline-content">
-          <div class="offline-icon">🌙</div>
-          <div>準備中...</div>
-        </div>
+        <div class="offline-content"><div class="offline-icon">🌙</div><div>準備中</div></div>
       </div>
       <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-150x150.png" alt="とるま">
-      <div class="badge-offline" style="display:none;">閉店中</div>
+      <div class="badge-offline">閉店中</div>
     </div>
     <div class="title">Twitch: とるま</div>
-    <div class="status">確認中...</div>
+    <div class="status">準備中</div>
   </a>
 </div>
 
 <script>
-const YT_CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
+/**
+ * 設定：YouTube APIキー
+ * ※ Google Cloud Consoleで取得したキーをここに入れてください
+ */
 const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE'; 
+const YT_CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
+
+// 通信タイムアウト設定 (5秒)
+async function fetchWithTimeout(resource, options = {}) {
+  const { timeout = 5000 } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(resource, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (e) {
+    clearTimeout(id);
+    throw e;
+  }
+}
 
 async function checkYouTube() {
   const card = document.getElementById('yt-card');
   const thumb = document.getElementById('yt-thumb');
   const status = document.getElementById('yt-status');
-  const skeleton = document.getElementById('yt-skeleton');
-  const offline = document.getElementById('yt-offline');
-  const badge = card.querySelector('.badge-offline');
+  const badge = document.getElementById('yt-badge');
+
+  if (!card || !status) return;
 
   try {
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YT_CHANNEL_ID}&type=video&eventType=live&liveBroadcastContent=live&maxResults=1&key=${YT_API_KEY}`);
-    const data = await res.json();
-
-    if (data.items && data.items.length > 0) {
-      // LIVE中
-      thumb.src = data.items[0].snippet.thumbnails.medium.url;
-      status.innerHTML = '● LIVE配信中！';
-      card.classList.add('live');
-      badge.style.display = 'none';
-      thumb.classList.add('show');
-      offline.classList.remove('show');
-    } else {
-      // オフライン
-      status.textContent = '準備中';
-      card.classList.remove('live');
-      badge.style.display = 'block';
-      thumb.classList.remove('show');
-      offline.classList.add('show');
-    }
-  } catch(e) {
-    // エラー時もオフライン表示
-    status.textContent = '準備中';
-    card.classList.remove('live');
-    badge.style.display = 'block';
+    if (YT_API_KEY.includes('ここに')) throw new Error('Key not set');
