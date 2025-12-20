@@ -1,0 +1,58 @@
+body {
+  background:#111;
+  color:#fff;
+  font-family: system-ui, sans-serif;
+  text-align:center;
+}
+
+h2 { margin: 16px 0; }
+
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+  gap:16px;
+  max-width:960px;
+  margin:0 auto 40px;
+  padding:0 12px;
+}
+
+.card {
+  position:relative;
+  opacity:0.35;
+  filter:grayscale(100%);
+  transition:0.25s;
+}
+
+.card img {
+  width:100%;
+  border-radius:12px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.card .name {
+  margin-top:6px;
+  font-size:14px;
+}
+
+.badge {
+  position:absolute;
+  top:8px;
+  left:8px;
+  background:#e53935;
+  color:#fff;
+  font-size:12px;
+  padding:4px 6px;
+  border-radius:6px;
+  display:none;
+}
+
+/* 配信中 */
+.card.live {
+  opacity:1;
+  filter:none;
+}
+
+.card.live .badge {
+  display:block;
+}
