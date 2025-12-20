@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ふらっとcafe ライブ配信ポータル</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
   <style>
     /* --- 基本設定 & 変数 --- */
     :root {
@@ -12,12 +13,11 @@
       --bg-yuzu: #fffde7;     --text-yuzu: #f57f17;
       --bg-lily: #ffebee;     --text-lily: #b71c1c;
       --bg-toru: #f3e5f5;     --text-toru: #4a148c;
-      --font-main: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
     }
 
     body {
       margin: 0;
-      font-family: var(--font-main);
+      font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
       background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1950&q=80') no-repeat center center fixed;
       background-size: cover;
       color: #333;
@@ -27,49 +27,25 @@
     body::before {
       content: "";
       position: fixed; top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.4);
       z-index: -1;
     }
 
+    /* --- ヘッダー（ネオン・改行なし・リボンなし） --- */
     h2 {
-  text-align: center;
-  margin: 40px 0;
-  font-size: 2.2rem;
-  font-weight: bold;
-  /* ネオンの色設定（温かみのあるピンク・レッド系） */
-  color: #fff;
-  text-shadow:
-    0 0 5px #fff,
-    0 0 10px #fff,
-    0 0 20px #ff0055,
-    0 0 40px #ff0055,
-    0 0 80px #ff0055,
-    0 0 90px #ff0055;
-  
-  /* 筆記体や丸みのあるフォントにするとよりネオンっぽくなります */
-  font-family: 'Hiragino Maru Gothic ProN', 'Yu Gothic', sans-serif;
-  
-  /* ネオンの「瞬き」アニメーション */
-  animation: flicker 2s infinite alternate;
-}
-
-@keyframes flicker {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
-    text-shadow:
-      0 0 4px #fff,
-      0 0 11px #fff,
-      0 0 19px #fff,
-      0 0 40px #ff0055,
-      0 0 80px #ff0055,
-      0 0 90px #ff0055,
-      0 0 100px #ff0055,
-      0 0 150px #ff0055;
-  }
-  20%, 24%, 55% {        
-    text-shadow: none; /* 一瞬消えることでチカチカ感を演出 */
-  }
-}
-
+      text-align: center;
+      margin: 50px 0;
+      /* 画面幅に合わせて自動調整し、改行を禁止する */
+      font-size: clamp(1.1rem, 5.5vw, 2.4rem);
+      white-space: nowrap; 
+      letter-spacing: 0.1em;
+      color: #fff;
+      /* 点滅なしの静かな発光 */
+      text-shadow:
+        0 0 7px #fff,
+        0 0 15px #ff0055,
+        0 0 30px #ff0055;
+    }
 
     /* --- レイアウト --- */
     .container {
@@ -88,7 +64,7 @@
       padding: 15px;
       text-align: center;
       position: relative;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease;
       text-decoration: none;
       display: flex;
       flex-direction: column;
@@ -98,23 +74,13 @@
       background: #fff;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-    }
+    .card:hover { transform: translateY(-5px); }
 
-    /* 配信中（ライブ）のスタイル */
     .card.live {
       border-color: #ff0000;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
     }
 
-    /* --- 画像エリア --- */
     .img-container {
       width: 100%;
       aspect-ratio: 16 / 9;
@@ -134,12 +100,11 @@
       object-fit: cover;
       display: block;
       transition: opacity 0.4s;
-      opacity: 0; /* 初期は非表示 */
+      opacity: 0;
       z-index: 2;
     }
     .card img.show { opacity: 1; }
 
-    /* 閉店中・準備中アニメーション */
     .offline-placeholder {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -151,15 +116,12 @@
       color: #5d4037;
       font-weight: bold;
       z-index: 1;
-      opacity: 1; /* 初期は表示 */
+      opacity: 1;
       transition: opacity 0.4s;
     }
-    /* ライブ中はプレースホルダーを隠す */
     .card.live .offline-placeholder { opacity: 0; }
 
-    .offline-content {
-      animation: float 3s ease-in-out infinite;
-    }
+    .offline-content { animation: float 3s ease-in-out infinite; }
     .offline-icon { font-size: 2.2rem; margin-bottom: 5px; }
 
     @keyframes float {
@@ -167,18 +129,20 @@
       50% { transform: translateY(-10px); }
     }
 
-    /* --- テキスト --- */
     .title {
       font-size: 1.1rem;
       font-weight: bold;
       margin: 5px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
     }
 
     .status {
       font-size: 0.9rem;
       opacity: 0.9;
       font-weight: 500;
-      min-height: 1.2em;
     }
 
     .badge-offline {
@@ -192,7 +156,6 @@
       z-index: 3;
     }
 
-    /* 個別カラー設定 */
     .card-yt { background: var(--bg-yt); color: var(--text-yt); }
     .card-waka { background: var(--bg-waka); color: var(--text-waka); }
     .card-yuzu { background: var(--bg-yuzu); color: var(--text-yuzu); }
@@ -206,19 +169,16 @@
 </head>
 <body>
 
-<h2>🎀 ふらっとcafe ライブ配信ポータル 🎀</h2>
+<h2 id="portal-header">ふらっとcafe ライブ配信ポータル</h2>
 
 <div class="container" id="portal-container">
   <a href="https://www.youtube.com/@flatcafe_games/live" target="_blank" class="card card-yt" id="yt-card">
     <div class="img-container">
       <div class="offline-placeholder" id="yt-offline">
-        <div class="offline-content">
-          <div class="offline-icon">☕</div>
-          <div>CLOSED</div>
-        </div>
+        <div class="offline-content"><div class="offline-icon">☕</div><div>CLOSED</div></div>
       </div>
       <img id="yt-thumb" src="" alt="YouTube">
-      <div class="badge-offline" id="yt-badge">CLOSED</div>
+      <div class="badge-offline">CLOSED</div>
     </div>
     <div class="title">YouTube: ふらcafe</div>
     <div class="status" id="yt-status">準備中</div>
@@ -274,14 +234,9 @@
 </div>
 
 <script>
-/**
- * 設定：YouTube APIキー
- * ※ Google Cloud Consoleで取得したキーをここに入れてください
- */
 const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE'; 
 const YT_CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
 
-// 通信タイムアウト設定 (5秒)
 async function fetchWithTimeout(resource, options = {}) {
   const { timeout = 5000 } = options;
   const controller = new AbortController();
@@ -300,9 +255,68 @@ async function checkYouTube() {
   const card = document.getElementById('yt-card');
   const thumb = document.getElementById('yt-thumb');
   const status = document.getElementById('yt-status');
-  const badge = document.getElementById('yt-badge');
-
-  if (!card || !status) return;
+  const badge = card.querySelector('.badge-offline');
 
   try {
     if (YT_API_KEY.includes('ここに')) throw new Error('Key not set');
+    const res = await fetchWithTimeout(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${YT_CHANNEL_ID}&type=video&eventType=live&liveBroadcastContent=live&maxResults=1&key=${YT_API_KEY}`);
+    const data = await res.json();
+
+    if (data.items && data.items.length > 0) {
+      thumb.src = data.items[0].snippet.thumbnails.medium.url;
+      thumb.classList.add('show');
+      status.innerHTML = '● LIVE配信中！';
+      card.classList.add('live');
+      badge.style.display = 'none';
+    } else {
+      throw new Error('Offline');
+    }
+  } catch (e) {
+    status.textContent = '準備中';
+    card.classList.remove('live');
+    thumb.classList.remove('show');
+    badge.style.display = 'block';
+  }
+}
+
+async function checkTwitch() {
+  const cards = document.querySelectorAll('#portal-container .card[data-channel]');
+  await Promise.all(Array.from(cards).map(async (card) => {
+    const channel = card.dataset.channel;
+    const img = card.querySelector('img');
+    const statusDiv = card.querySelector('.status');
+    const badge = card.querySelector('.badge-offline');
+
+    try {
+      const res = await fetchWithTimeout(`https://decapi.me/twitch/uptime/${channel}`);
+      const text = await res.text();
+      if (!text.toLowerCase().includes('offline')) {
+        card.classList.add('live');
+        statusDiv.innerHTML = `● 配信中: ${text}`;
+        img.classList.add('show');
+        badge.style.display = 'none';
+      } else {
+        throw new Error('Offline');
+      }
+    } catch(e) {
+      statusDiv.textContent = '準備中';
+      card.classList.remove('live');
+      img.classList.remove('show');
+      badge.style.display = 'block';
+    }
+  }));
+}
+
+function refreshAll() {
+  checkYouTube();
+  checkTwitch();
+}
+
+window.addEventListener('load', () => {
+  refreshAll();
+  setInterval(refreshAll, 60000);
+});
+</script>
+
+</body>
+</html>
