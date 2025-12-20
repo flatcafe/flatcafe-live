@@ -89,10 +89,10 @@
     }
 
     .thumb {
-      display: none;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
+      max-width: 100%;
+      height: 180px; /* 好きな高さに固定 */
+      object-fit: cover; /* 切り抜きでカードに収める */
+      border-radius: 12px;
     }
 
     .card.live .thumb {
