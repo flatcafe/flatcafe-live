@@ -127,7 +127,7 @@ const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE';
 const CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
 
 async function checkYouTube() {
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&key=${YT_API_KEY}`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&type=video&eventType=live&liveBroadcastContent=live&maxResults=1&key=${YT_API_KEY}`;
   try {
     const res = await fetch(url);
     const data = await res.json();
