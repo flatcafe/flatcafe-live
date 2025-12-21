@@ -11,53 +11,66 @@
     body {
       margin: 0; padding: 0;
       font-family: 'Klee One', 'M PLUS Rounded 1c', sans-serif;
-      background: 
-        radial-gradient(circle at 20% 30%, rgba(184, 134, 11, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(199, 0, 57, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at center, #0a2a1a 0%, #051510 100%);
-      background-attachment: fixed;
-      color: #fff;
-      overflow-x: hidden;
+      background: radial-gradient(circle at 20% 30%, rgba(184, 134, 11, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(199, 0, 57, 0.1) 0%, transparent 40%), radial-gradient(circle at center, #0a2a1a 0%, #051510 100%);
+      background-attachment: fixed; color: #fff; overflow-x: hidden;
     }
-    body::after {
-      content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 80%);
-      animation: pulseLight 8s infinite alternate; pointer-events: none; z-index: -1;
-    }
+    body::after { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 80%); animation: pulseLight 8s infinite alternate; pointer-events: none; z-index: -1; }
     @keyframes pulseLight { from { opacity: 0.3; } to { opacity: 0.8; } }
     .snow-container { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 1; }
     .snowflake { position: absolute; top: -10%; background: #fff; border-radius: 50%; filter: blur(1px); animation: fall linear infinite; }
     @keyframes fall { to { transform: translateY(110vh); } }
 
-    /* --- 装飾レイヤー：視認性確保済み --- */
+    /* --- 装飾レイヤー --- */
     .parallax-layer { position: fixed; top: -20%; left: -10%; width: 120%; height: 150%; pointer-events: none; will-change: transform; }
-    #layer-front { z-index: 9999; filter: blur(8px); opacity: 0.6; }
+    #layer-front { z-index: 9999; filter: blur(6px); opacity: 0.8; } /* イラストが見えるようブラーを弱めに調整 */
     #layer-mid { z-index: 5; opacity: 0.9; }
-    .glass-orb { position: absolute; border-radius: 50%; box-shadow: inset -5px -5px 15px rgba(0,0,0,0.4), 2px 2px 10px rgba(255,255,255,0.1); }
+
+    /* 既存のガラス玉・星 */
+    .glass-orb { position: absolute; border-radius: 50%; box-shadow: inset -5px -5px 15px rgba(0,0,0,0.4), 2px 2px 10px rgba(255,255,255,0.2); }
     .orb-red { background: radial-gradient(circle at 30% 30%, #ff4d4d, #a1002b); }
     .orb-gold { background: radial-gradient(circle at 30% 30%, #ffd700, #8a6d00); }
     .star { position: absolute; background: #fff; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); box-shadow: 0 0 10px #fff; }
 
+    /* --- 【NEW】キャラクターオーナメント --- */
+    .char-orb {
+      position: absolute; border-radius: 50%; overflow: hidden;
+      /* ガラスの質感と光彩を追加 */
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px currentColor;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .char-orb img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: overlay; opacity: 0.9; }
+    /* 各キャラのイメージカラー光彩 */
+    .char-red { color: #ff4d4d; } /* 赤 */
+    .char-purple { color: #9b59b6; } /* 紫 */
+    .char-orange { color: #f39c12; } /* オレンジ/黄 */
+    .char-white { color: #2ecc71; } /* 白/緑 */
+
     /* --- 各セクション --- */
     section { width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; box-sizing: border-box; padding: 0 20px; }
     
-    /* 1. オープニング（見切れ・被り修正済み） */
-    #opening { height: 100vh; }
+    /* 1. オープニング（ロゴ追加） */
+    #opening { height: 100vh; justify-content: center; }
+    .site-logo {
+      width: 150px; height: auto; margin-bottom: 20px;
+      filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5)); /* ロゴを少し発光させる */
+      animation: floatLogo 3s ease-in-out infinite alternate;
+    }
+    @keyframes floatLogo { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
     .neon-christmas {
       font-family: 'Great Vibes', cursive;
-      font-size: clamp(3rem, 15vw, 7.5rem); 
-      color: #fff;
+      font-size: clamp(3rem, 15vw, 7.5rem); color: #fff;
       text-shadow: 0 0 15px rgba(0,0,0,0.8), 0 0 20px #ff0055, 0 0 40px #ff0055;
       line-height: 1.1; margin: 0; letter-spacing: 2px;
     }
     .scroll-guide { margin-top: 50px; font-size: 0.9rem; letter-spacing: 4px; color: var(--text-gold); animation: bounce 2s infinite; text-transform: uppercase; font-weight: 600; }
     @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-    /* 2. メッセージ（距離を確保） */
+    /* 2. メッセージ */
     #message-section { padding: 250px 20px; }
     .message-text { max-width: 650px; font-size: 1.15rem; line-height: 2.3; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.95); }
 
-    /* 3. イラスト（中央配置） */
+    /* 3. イラスト */
     #illust-section { height: 100vh; }
     .illust-frame {
       width: 100%; max-width: 850px; aspect-ratio: 16 / 9;
@@ -67,8 +80,6 @@
     }
     .illust-frame:hover { transform: scale(1.02); }
     .illust-frame img { width: 100%; height: 100%; object-fit: contain; }
-
-    /* TOURMAクレジット固定 */
     .credit { margin-top: 25px; font-size: 1.1rem; letter-spacing: 5px; color: var(--text-gold); text-transform: uppercase; border-top: 1px solid var(--text-gold); padding-top: 10px; }
 
     /* 拡大機能 */
@@ -78,26 +89,35 @@
   </style>
 </head>
 <body>
-
   <div class="snow-container" id="snow-box"></div>
 
   <div class="parallax-layer" id="layer-front">
     <div class="glass-orb orb-red" style="top: 2%; right: -5%; width: 280px; height: 280px;"></div>
-    <div class="glass-orb orb-gold" style="bottom: 5%; right: 2%; width: 220px; height: 220px;"></div>
-    <div class="glass-orb orb-red" style="top: 45%; left: -8%; width: 140px; height: 140px;"></div>
+    <div class="char-orb char-red" style="top: 60%; left: -5%; width: 180px; height: 180px;">
+        <img src="image_16.png" alt="Character Red">
+    </div>
+    <div class="char-orb char-white" style="top: 30%; right: -2%; width: 150px; height: 150px;">
+        <img src="image_19.png" alt="Character White">
+    </div>
   </div>
   
   <div class="parallax-layer" id="layer-mid">
     <div class="star" style="top: 15%; left: 10%; width: 40px; height: 40px;"></div>
     <div class="glass-orb orb-gold" style="top: 30%; right: 15%; width: 60px; height: 60px;"></div>
-    <div class="star" style="bottom: 20%; left: 20%; width: 30px; height: 30px;"></div>
-    <div class="star" style="top: 70%; right: 25%; width: 50px; height: 50px;"></div>
+    <div class="char-orb char-purple" style="top: 20%; right: 25%; width: 100px; height: 100px;">
+        <img src="image_17.png" alt="Character Purple">
+    </div>
+    <div class="char-orb char-orange" style="bottom: 15%; left: 15%; width: 120px; height: 120px;">
+        <img src="image_18.png" alt="Character Orange">
+    </div>
+    <div class="star" style="top: 70%; right: 35%; width: 50px; height: 50px;"></div>
   </div>
 
   <div id="overlay" onclick="closeImage()"><img id="expanded-img" src="" alt="拡大イラスト"></div>
 
   <main>
     <section id="opening">
+      <img src="image_15.png" alt="ふらっとCafe ロゴ" class="site-logo">
       <h1 class="neon-christmas">Merry Christmas</h1>
       <div class="scroll-guide">▼ SCROLL DOWN ▼</div>
     </section>
@@ -129,10 +149,7 @@
     const front = document.getElementById('layer-front'); const mid = document.getElementById('layer-mid');
     window.addEventListener('scroll', () => {
       const y = window.pageYOffset;
-      requestAnimationFrame(() => { 
-        front.style.transform = `translate3d(0, ${y * -0.9}px, 0)`; 
-        mid.style.transform = `translate3d(0, ${y * -0.4}px, 0)`; 
-      });
+      requestAnimationFrame(() => { front.style.transform = `translate3d(0, ${y * -0.9}px, 0)`; mid.style.transform = `translate3d(0, ${y * -0.4}px, 0)`; });
     });
     function expandImage() { const targetSrc = document.getElementById('target-img').src; const overlay = document.getElementById('overlay'); const expandedImg = document.getElementById('expanded-img'); expandedImg.src = targetSrc; overlay.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
     function closeImage() { const overlay = document.getElementById('overlay'); overlay.style.display = 'none'; document.body.style.overflow = 'auto'; }
