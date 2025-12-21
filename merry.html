@@ -3,25 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Merry Christmas Party - とるま Special Illustration</title>
+  <title>Merry Christmas Party - TOURMA Special Illustration</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=M+PLUS+Rounded+1c:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* --- 高級感のある多重背景 --- */
+    /* --- 基本設定（以前のラグジュアリー背景を維持） --- */
     body {
       margin: 0; padding: 0;
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      /* 深いグリーン、ボルドー、ゴールドの光が混ざり合う夜をCSSで表現 */
       background: 
         radial-gradient(circle at 20% 30%, rgba(184, 134, 11, 0.15) 0%, transparent 40%),
         radial-gradient(circle at 80% 70%, rgba(199, 0, 57, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at center, #0a2a1a 0%, #051510 100%);
+        radial-gradient(circle at center, #0a2a1a) 0%, #051510 100%);
       background-attachment: fixed;
       color: #fff;
       overflow-x: hidden;
       min-height: 220vh;
     }
 
-    /* 背景にゆっくりとした光の明滅を追加 */
     body::after {
       content: "";
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -29,81 +27,67 @@
       animation: pulseLight 8s infinite alternate;
       pointer-events: none; z-index: -1;
     }
+    @keyframes pulseLight { from { opacity: 0.3; } to { opacity: 0.8; } }
 
-    @keyframes pulseLight {
-      from { opacity: 0.3; } to { opacity: 0.8; }
-    }
-
-    /* --- パーティー演出：洗練された雪と光の粒 --- */
-    .snow-container {
-      position: fixed; top:0; left:0; width:100%; height:100%;
-      pointer-events: none; z-index: 1;
-    }
-    .snowflake {
-      position: absolute; top: -10%;
-      background: #fff; border-radius: 50%;
-      filter: blur(1px);
-      animation: fall linear infinite;
-    }
+    .snow-container { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 1; }
+    .snowflake { position: absolute; top: -10%; background: #fff; border-radius: 50%; filter: blur(1px); animation: fall linear infinite; }
     @keyframes fall { to { transform: translateY(110vh); } }
 
-    /* --- 装飾レイヤー：絵文字を捨てて「光」にする --- */
-    .parallax-layer {
-      position: fixed; top: -20%; left: -10%; width: 120%; height: 150%;
-      pointer-events: none; will-change: transform;
-    }
-    
+    /* --- 装飾レイヤー --- */
+    .parallax-layer { position: fixed; top: -20%; left: -10%; width: 120%; height: 150%; pointer-events: none; will-change: transform; }
     #layer-front { z-index: 9999; filter: blur(8px); opacity: 0.6; }
     #layer-mid { z-index: 5; opacity: 0.9; }
 
-    /* オーナメントのスタイル（CSSで描画） */
-    .glass-orb {
-      position: absolute;
-      border-radius: 50%;
-      box-shadow: inset -5px -5px 15px rgba(0,0,0,0.4), 2px 2px 10px rgba(255,255,255,0.1);
-    }
+    .glass-orb { position: absolute; border-radius: 50%; box-shadow: inset -5px -5px 15px rgba(0,0,0,0.4), 2px 2px 10px rgba(255,255,255,0.1); }
     .orb-red { background: radial-gradient(circle at 30% 30%, #ff4d4d, #a1002b); }
     .orb-gold { background: radial-gradient(circle at 30% 30%, #ffd700, #8a6d00); }
-    
-    /* キラキラした星（CSS Art） */
-    .star {
-      position: absolute;
-      background: #fff;
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      box-shadow: 0 0 10px #fff;
-    }
+    .star { position: absolute; background: #fff; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); box-shadow: 0 0 10px #fff; }
 
     /* --- コンテンツ --- */
-    section { 
-      min-height: 100vh; display: flex; justify-content: center; align-items: center; 
-      flex-direction: column; text-align: center; position: relative; z-index: 10;
-    }
+    section { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; }
 
     .neon-christmas {
       font-family: 'Great Vibes', cursive;
       font-size: clamp(3rem, 15vw, 8rem);
       color: #fff;
-      text-shadow: 0 0 10px #fff, 0 0 20px #ff0055, 0 0 40px #ff0055, 0 0 80px rgba(255, 0, 85, 0.3);
-      line-height: 1.1; margin: 0;
-      letter-spacing: 2px;
+      text-shadow: 0 0 10px #fff, 0 0 20px #ff0055, 0 0 40px #ff0055;
+      line-height: 1.1; margin: 0; letter-spacing: 2px;
     }
 
+    /* イラストフレーム：拡大対応 */
     .illust-frame {
       width: 90vw; max-width: 850px;
       aspect-ratio: 16 / 9;
       border: 2px solid rgba(212, 175, 55, 0.5);
       background: #000;
       box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(212, 175, 55, 0.2);
-      border-radius: 4px; /* あえて少しシャープにして高級感を出す */
+      border-radius: 4px;
       overflow: hidden;
       margin: 50px 0;
+      cursor: zoom-in; /* 拡大できることを示すカーソル */
+      transition: transform 0.4s ease;
     }
+    .illust-frame:hover { transform: scale(1.02); }
     .illust-frame img { width: 100%; height: 100%; object-fit: contain; }
-    
-    .credit { 
-      font-size: 1.1rem; letter-spacing: 3px; color: #d4af37; 
-      text-transform: uppercase; border-top: 1px solid #d4af37; padding-top: 10px;
+
+    /* クレジット修正 */
+    .credit { font-size: 1.1rem; letter-spacing: 3px; color: #d4af37; text-transform: uppercase; border-top: 1px solid #d4af37; padding-top: 10px; }
+
+    /* --- 【NEW】拡大表示用オーバーレイ（モーダル） --- */
+    #overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: none; /* 初期状態は非表示 */
+      justify-content: center; align-items: center;
+      z-index: 10000; /* 全ての要素の最前面 */
+      cursor: zoom-out;
     }
+    #overlay img {
+      max-width: 95%; max-height: 95%;
+      box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+      animation: zoomIn 0.3s ease;
+    }
+    @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 <body>
@@ -122,7 +106,10 @@
     <div class="star" style="top: 60%; left: 20%; width: 30px; height: 30px;"></div>
     <div class="glass-orb orb-red" style="top: 15%; left: 50%; width: 40px; height: 40px;"></div>
     <div class="star" style="top: 85%; right: 30%; width: 50px; height: 50px;"></div>
-    <div class="star" style="top: 50%; right: 5%; width: 20px; height: 20px;"></div>
+  </div>
+
+  <div id="overlay" onclick="closeImage()">
+    <img id="expanded-img" src="" alt="拡大イラスト">
   </div>
 
   <main>
@@ -132,22 +119,21 @@
     </section>
 
     <section id="illust-section">
-      <div class="illust-frame">
-        <img src="merrychristmas2025" alt="とるまクリスマスイラスト">
+      <div class="illust-frame" onclick="expandImage()">
+        <img id="target-img" src="merrychristmas2025" alt="TOURMA Illustration">
       </div>
-      <p class="credit">Illustration by TORUMA</p>
+      <p class="credit">Illustration by TOURMA</p>
     </section>
   </main>
 
   <script>
-    // 雪と光の粒を自動生成
+    // 雪と光の生成
     const snowBox = document.getElementById('snow-box');
     for (let i = 0; i < 60; i++) {
       const s = document.createElement('div');
       s.className = 'snowflake';
       const size = Math.random() * 4 + 1 + 'px';
-      s.style.width = size;
-      s.style.height = size;
+      s.style.width = size; s.style.height = size;
       s.style.left = Math.random() * 100 + '%';
       s.style.animationDuration = (Math.random() * 8 + 4) + 's';
       s.style.animationDelay = (Math.random() * 5) + 's';
@@ -155,18 +141,33 @@
       snowBox.appendChild(s);
     }
 
-    // パララックス制御（より滑らかに）
+    // パララックス制御
     const front = document.getElementById('layer-front');
     const mid = document.getElementById('layer-mid');
-    
     window.addEventListener('scroll', () => {
       const y = window.pageYOffset;
-      // 手前はダイナミックに、中景は繊細に動かす
       requestAnimationFrame(() => {
         front.style.transform = `translate3d(0, ${y * -0.9}px, 0)`;
         mid.style.transform = `translate3d(0, ${y * -0.4}px, 0)`;
       });
     });
+
+    // --- 【NEW】拡大表示スクリプト ---
+    function expandImage() {
+      const targetSrc = document.getElementById('target-img').src;
+      const overlay = document.getElementById('overlay');
+      const expandedImg = document.getElementById('expanded-img');
+      
+      expandedImg.src = targetSrc;
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden'; // 背後のスクロールを止める
+    }
+
+    function closeImage() {
+      const overlay = document.getElementById('overlay');
+      overlay.style.display = 'none';
+      document.body.style.overflow = 'auto'; // スクロールを再開
+    }
   </script>
 </body>
 </html>
