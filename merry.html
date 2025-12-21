@@ -6,20 +6,19 @@
   <title>Merry Christmas Party - TOURMA Special Illustration</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Klee+One:wght@400;600&family=M+PLUS+Rounded+1c:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* --- 基本設定（ラグジュアリー背景） --- */
-    :root { --text-gold: #d4af37; }
+    :root { --text-gold: #d4af37; --glow-red: #ff4d4d; --glow-purple: #9b59b6; --glow-orange: #f39c12; --glow-green: #2ecc71; }
     body {
       margin: 0; padding: 0;
       font-family: 'Klee One', 'M PLUS Rounded 1c', sans-serif;
       background: 
-        radial-gradient(circle at 20% 30%, rgba(184, 134, 11, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(199, 0, 57, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 20% 30%, rgba(184, 134, 11, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(199, 0, 57, 0.15) 0%, transparent 40%),
         radial-gradient(circle at center, #0a2a1a 0%, #051510 100%);
       background-attachment: fixed; color: #fff; overflow-x: hidden;
     }
     body::after {
       content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 80%);
+      background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 80%);
       animation: pulseLight 8s infinite alternate; pointer-events: none; z-index: -1;
     }
     @keyframes pulseLight { from { opacity: 0.3; } to { opacity: 0.8; } }
@@ -29,137 +28,72 @@
     .snowflake { position: absolute; top: -10%; background: #fff; border-radius: 50%; filter: blur(1px); animation: fall linear infinite; }
     @keyframes fall { to { transform: translateY(110vh); } }
 
-    /* --- 装飾レイヤー：パララックス --- */
+    /* --- 装飾レイヤー：ボカシをキャラから分離 --- */
     .parallax-layer { position: fixed; top: -20%; left: -10%; width: 120%; height: 150%; pointer-events: none; will-change: transform; }
-    #layer-front { z-index: 9999; filter: blur(6px); opacity: 0.8; }
+    #layer-front { z-index: 9999; opacity: 0.9; }
     #layer-mid { z-index: 5; opacity: 0.9; }
 
-    /* ガラスオーナメント・星 */
-    .glass-orb { position: absolute; border-radius: 50%; box-shadow: inset -5px -5px 15px rgba(0,0,0,0.4), 2px 2px 10px rgba(255,255,255,0.2); }
+    /* ガラスオーナメント（個別にボカシ） */
+    .glass-orb { position: absolute; border-radius: 50%; box-shadow: inset -5px -5px 15px rgba(0,0,0,0.4), 2px 2px 10px rgba(255,255,255,0.2); filter: blur(4px); }
     .orb-red { background: radial-gradient(circle at 30% 30%, #ff4d4d, #a1002b); }
     .orb-gold { background: radial-gradient(circle at 30% 30%, #ffd700, #8a6d00); }
-    .star { position: absolute; background: #fff; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); box-shadow: 0 0 10px #fff; }
+    .orb-green { background: radial-gradient(circle at 30% 30%, #2ecc71, #0a3d1d); filter: blur(8px); }
 
-    /* キャラクターオーナメント */
-    .char-orb {
-      position: absolute; border-radius: 50%; overflow: hidden;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px currentColor;
-      border: 2px solid rgba(255,255,255,0.3);
+    /* 煌めく星 */
+    .star {
+      position: absolute; background: #fff;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      box-shadow: 0 0 15px #fff;
+      animation: twinkle 3s infinite ease-in-out;
     }
-    .char-orb img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: overlay; opacity: 0.95; }
-    .char-red { color: #ff4d4d; }
-    .char-purple { color: #9b59b6; }
-    .char-orange { color: #f39c12; }
-    .char-white { color: #2ecc71; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.4; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
 
-    /* --- 各セクション --- */
-    section { width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; padding: 0 20px; box-sizing: border-box; }
+    /* キャラクターオーナメント（クッキリ・サイズ統一） */
+    .char-orb {
+      position: absolute; width: 160px; height: 160px; border-radius: 50%; overflow: hidden;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 20px currentColor;
+      border: 3px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.2);
+    }
+    .char-orb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
+    .char-red { color: var(--glow-red); }
+    .char-purple { color: var(--glow-purple); }
+    .char-orange { color: var(--glow-orange); }
+    .char-white { color: var(--glow-green); }
+
+    /* --- セクション --- */
+    section { width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; box-sizing: border-box; padding: 0 20px; }
     
-    /* 1. オープニング（ロゴ・ネオン） */
     #opening { height: 100vh; }
     .site-logo {
-      width: clamp(120px, 20vw, 180px); height: auto; margin-bottom: 20px;
-      filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.4));
+      width: clamp(130px, 22vw, 190px); height: auto; margin-bottom: 25px;
+      filter: drop-shadow(0 0 15px rgba(212, 175, 57, 0.6));
       animation: floatLogo 3s ease-in-out infinite alternate;
     }
-    @keyframes floatLogo { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+    @keyframes floatLogo { from { transform: translateY(0); } to { transform: translateY(-12px); } }
 
     .neon-christmas {
       font-family: 'Great Vibes', cursive;
       font-size: clamp(3rem, 15vw, 7.5rem); color: #fff;
-      text-shadow: 0 0 15px rgba(0,0,0,0.8), 0 0 20px #ff0055, 0 0 40px #ff0055;
+      text-shadow: 0 0 15px rgba(0,0,0,0.8), 0 0 25px #ff0055, 0 0 50px #ff0055;
       line-height: 1.1; margin: 0; letter-spacing: 2px;
     }
-    .scroll-guide { margin-top: 50px; font-size: 0.9rem; letter-spacing: 4px; color: var(--text-gold); animation: bounce 2s infinite; text-transform: uppercase; font-weight: 600; }
+    .scroll-guide { margin-top: 50px; font-size: 0.95rem; letter-spacing: 5px; color: var(--text-gold); animation: bounce 2s infinite; font-weight: 600; }
     @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-    /* 2. メッセージ */
     #message-section { padding: 250px 20px; }
-    .message-text { max-width: 650px; font-size: 1.15rem; line-height: 2.3; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.95); }
+    .message-text { max-width: 650px; font-size: 1.15rem; line-height: 2.4; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.95); }
 
-    /* 3. イラスト（中央配置） */
     #illust-section { height: 100vh; }
     .illust-frame {
       width: 100%; max-width: 850px; aspect-ratio: 16 / 9;
       border: 2px solid rgba(212, 175, 55, 0.4); background: #000;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(212, 175, 55, 0.2);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.9), 0 0 50px rgba(212, 175, 55, 0.25);
       border-radius: 4px; overflow: hidden; cursor: zoom-in; transition: transform 0.4s ease;
     }
     .illust-frame:hover { transform: scale(1.02); }
     .illust-frame img { width: 100%; height: 100%; object-fit: contain; }
-    .credit { margin-top: 25px; font-size: 1.1rem; letter-spacing: 5px; color: var(--text-gold); text-transform: uppercase; border-top: 1px solid var(--text-gold); padding-top: 10px; }
+    .credit { margin-top: 30px; font-size: 1.2rem; letter-spacing: 6px; color: var(--text-gold); text-transform: uppercase; border-top: 1px solid var(--text-gold); padding-top: 12px; }
 
     /* 拡大機能 */
-    #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: none; justify-content: center; align-items: center; z-index: 10000; cursor: zoom-out; }
-    #overlay img { max-width: 95%; max-height: 95%; animation: zoomIn 0.3s ease; }
-    @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  </style>
-</head>
-<body>
-  <div class="snow-container" id="snow-box"></div>
-
-  <div class="parallax-layer" id="layer-front">
-    <div class="glass-orb orb-red" style="top: 2%; right: -5%; width: 280px; height: 280px;"></div>
-    <div class="char-orb char-red" style="top: 60%; left: -5%; width: 200px; height: 200px;">
-        <img src="char_red.png" alt="Character Red">
-    </div>
-    <div class="char-orb char-white" style="top: 25%; right: -2%; width: 160px; height: 160px;">
-        <img src="char_white.png" alt="Character White">
-    </div>
-  </div>
-  
-  <div class="parallax-layer" id="layer-mid">
-    <div class="star" style="top: 15%; left: 10%; width: 40px; height: 40px;"></div>
-    <div class="glass-orb orb-gold" style="top: 30%; right: 15%; width: 60px; height: 60px;"></div>
-    <div class="char-orb char-purple" style="top: 20%; right: 25%; width: 120px; height: 120px;">
-        <img src="char_purple.png" alt="TOURMA">
-    </div>
-    <div class="char-orb char-orange" style="bottom: 15%; left: 15%; width: 140px; height: 140px;">
-        <img src="char_orange.png" alt="Character Orange">
-    </div>
-    <div class="star" style="top: 70%; right: 35%; width: 50px; height: 50px;"></div>
-  </div>
-
-  <div id="overlay" onclick="closeImage()"><img id="expanded-img" src="" alt="拡大イラスト"></div>
-
-  <main>
-    <section id="opening">
-      <img src="logo.png" alt="ふらっとCafe ロゴ" class="site-logo">
-      <h1 class="neon-christmas">Merry Christmas</h1>
-      <div class="scroll-guide">▼ SCROLL DOWN ▼</div>
-    </section>
-
-    <section id="message-section">
-      <div class="message-text">
-        いつも「ふらっとcafe」を温かく応援してくださり、本当にありがとうございます。<br>
-        これからもゲーム実況と歌で、みんなの日々を少しだけ幸せに彩っていけたら幸せです。<br>
-        素敵なクリスマスを、あなたに。
-      </div>
-    </section>
-
-    <section id="illust-section">
-      <div class="illust-frame" onclick="expandImage()">
-        <img id="target-img" src="merrychristmas2025" alt="TOURMA Illustration">
-      </div>
-      <p class="credit">Illustration by TOURMA</p>
-    </section>
-  </main>
-
-  <script>
-    const snowBox = document.getElementById('snow-box');
-    for (let i = 0; i < 60; i++) {
-      const s = document.createElement('div');
-      s.className = 'snowflake';
-      const size = Math.random() * 4 + 1 + 'px'; s.style.width = size; s.style.height = size;
-      s.style.left = Math.random() * 100 + '%'; s.style.animationDuration = (Math.random() * 8 + 4) + 's'; s.style.animationDelay = (Math.random() * 5) + 's'; s.style.opacity = Math.random() * 0.7 + 0.3; snowBox.appendChild(s);
-    }
-    const front = document.getElementById('layer-front'); const mid = document.getElementById('layer-mid');
-    window.addEventListener('scroll', () => {
-      const y = window.pageYOffset;
-      requestAnimationFrame(() => { front.style.transform = `translate3d(0, ${y * -0.9}px, 0)`; mid.style.transform = `translate3d(0, ${y * -0.4}px, 0)`; });
-    });
-    function expandImage() { const targetSrc = document.getElementById('target-img').src; const overlay = document.getElementById('overlay'); const expandedImg = document.getElementById('expanded-img'); expandedImg.src = targetSrc; overlay.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-    function closeImage() { const overlay = document.getElementById('overlay'); overlay.style.display = 'none'; document.body.style.overflow = 'auto'; }
-  </script>
-</body>
-</html>
+    #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0,
