@@ -96,4 +96,83 @@
     .credit { margin-top: 30px; font-size: 1.2rem; letter-spacing: 6px; color: var(--text-gold); text-transform: uppercase; border-top: 1px solid var(--text-gold); padding-top: 12px; }
 
     /* 拡大機能 */
-    #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0,
+    #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); display: none; justify-content: center; align-items: center; z-index: 10001; cursor: zoom-out; }
+    #overlay img { max-width: 95%; max-height: 95%; animation: zoomIn 0.3s ease; }
+    @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="snow-container" id="snow-box"></div>
+
+  <div class="parallax-layer" id="layer-front">
+    <div class="char-orb char-red" style="top: 15%; left: 5%;">
+        <img src="char_red.png" alt="Wakariri">
+    </div>
+    <div class="char-orb char-white" style="top: 55%; right: 5%;">
+        <img src="char_white.png" alt="Megane">
+    </div>
+    <div class="glass-orb orb-red" style="top: 5%; left: 40%; width: 200px; height: 200px;"></div>
+    <div class="glass-orb orb-gold" style="top: 80%; left: 10%; width: 150px; height: 150px; filter: blur(10px);"></div>
+  </div>
+  
+  <div class="parallax-layer" id="layer-mid">
+    <div class="char-orb char-purple" style="top: 35%; right: 20%;">
+        <img src="char_purple.png" alt="TOURMA">
+    </div>
+    <div class="char-orb char-orange" style="bottom: 10%; left: 15%;">
+        <img src="char_orange.png" alt="Nekomimi">
+    </div>
+
+    <div class="star" style="top: 10%; left: 15%; width: 45px; height: 45px;"></div>
+    <div class="star" style="top: 25%; right: 10%; width: 30px; height: 30px; animation-delay: 1s;"></div>
+    <div class="star" style="bottom: 30%; left: 5%; width: 50px; height: 50px; animation-delay: 0.5s;"></div>
+    <div class="star" style="top: 50%; left: 30%; width: 25px; height: 25px; animation-delay: 2s;"></div>
+    <div class="star" style="bottom: 15%; right: 40%; width: 35px; height: 35px; animation-delay: 1.5s;"></div>
+    
+    <div class="glass-orb orb-green" style="top: 40%; left: 60%; width: 120px; height: 120px;"></div>
+    <div class="glass-orb orb-gold" style="top: 5%; right: 40%; width: 80px; height: 80px;"></div>
+  </div>
+
+  <div id="overlay" onclick="closeImage()"><img id="expanded-img" src="" alt="拡大イラスト"></div>
+
+  <main>
+    <section id="opening">
+      <img src="logo.png" alt="ふらっとCafe ロゴ" class="site-logo">
+      <h1 class="neon-christmas">Merry Christmas</h1>
+      <div class="scroll-guide">▼ SCROLL DOWN ▼</div>
+    </section>
+
+    <section id="message-section">
+      <div class="message-text">
+        いつも「ふらっとcafe」を温かく応援してくださり、本当にありがとうございます。<br>
+        これからもゲーム実況と歌で、みんなの日々を少しだけ幸せに彩っていけたら幸せです。<br>
+        素敵なクリスマスを、あなたに。
+      </div>
+    </section>
+
+    <section id="illust-section">
+      <div class="illust-frame" onclick="expandImage()">
+        <img id="target-img" src="merrychristmas2025" alt="TOURMA Illustration">
+      </div>
+      <p class="credit">Illustration by TOURMA</p>
+    </section>
+  </main>
+
+  <script>
+    const snowBox = document.getElementById('snow-box');
+    for (let i = 0; i < 70; i++) {
+      const s = document.createElement('div');
+      s.className = 'snowflake';
+      const size = Math.random() * 4 + 1 + 'px'; s.style.width = size; s.style.height = size;
+      s.style.left = Math.random() * 100 + '%'; s.style.animationDuration = (Math.random() * 8 + 4) + 's'; s.style.animationDelay = (Math.random() * 5) + 's'; s.style.opacity = Math.random() * 0.7 + 0.3; snowBox.appendChild(s);
+    }
+    const front = document.getElementById('layer-front'); const mid = document.getElementById('layer-mid');
+    window.addEventListener('scroll', () => {
+      const y = window.pageYOffset;
+      requestAnimationFrame(() => { front.style.transform = `translate3d(0, ${y * -0.9}px, 0)`; mid.style.transform = `translate3d(0, ${y * -0.4}px, 0)`; });
+    });
+    function expandImage() { const targetSrc = document.getElementById('target-img').src; const overlay = document.getElementById('overlay'); const expandedImg = document.getElementById('expanded-img'); expandedImg.src = targetSrc; overlay.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+    function closeImage() { const overlay = document.getElementById('overlay'); overlay.style.display = 'none'; document.body.style.overflow = 'auto'; }
+  </script>
+</body>
+</html>
