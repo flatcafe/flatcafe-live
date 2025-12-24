@@ -8,7 +8,6 @@
   <style>
     :root {
       --bg-yt: #fce4ec;       --text-yt: #880e4f;
-      --bg-tt: #e0f7fa;       --text-tt: #006064;
       --bg-waka: #f1f8e9;     --text-waka: #33691e;
       --bg-yuzu: #fffde7;     --text-yuzu: #f57f17;
       --bg-lily: #ffebee;     --text-lily: #b71c1c;
@@ -85,7 +84,7 @@
       border: 2px solid transparent;
       overflow: hidden;
       background: #fff;
-      order: 100; /* デフォルト（下の方） */
+      order: 100;
     }
 
     .card.live {
@@ -117,14 +116,14 @@
     }
     .card img.main-thumb.show { opacity: 1; }
 
-    /* 閉店札（画像）のスタイル */
+    /* 閉店札のスタイル */
     .closed-sign {
       position: absolute;
       top: 10px; right: 10px;
       width: 80px;
       z-index: 10;
       filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-      display: block; /* 初期状態は表示 */
+      display: block;
     }
     .card.live .closed-sign { display: none; }
 
@@ -142,7 +141,6 @@
 
     /* カラー指定 */
     .card-yt { background: var(--bg-yt); color: var(--text-yt); }
-    .card-tt { background: var(--bg-tt); color: var(--text-tt); }
     .card-waka { background: var(--bg-waka); color: var(--text-waka); }
     .card-yuzu { background: var(--bg-yuzu); color: var(--text-yuzu); }
     .card-lily { background: var(--bg-lily); color: var(--text-lily); }
@@ -167,21 +165,11 @@
     <div class="status" id="yt-status">準備中</div>
   </a>
 
-  <a href="https://www.tiktok.com/@ユーザー名/live" target="_blank" class="card card-tt" id="tt-card" data-tiktok="ユーザー名">
-    <div class="img-container">
-      <img src="closed_sign.png" class="closed-sign" alt="CLOSED">
-      <div class="offline-placeholder">📱</div>
-      <img id="tt-thumb" class="main-thumb" src="tiktok_live_image.jpg" alt="TikTok">
-    </div>
-    <div class="title">TikTok: ふらcafe</div>
-    <div class="status" id="tt-status">準備中</div>
-  </a>
-
   <a href="https://www.twitch.tv/wakanagi" target="_blank" class="card card-waka" data-channel="wakanagi">
     <div class="img-container">
       <img src="closed_sign.png" class="closed-sign" alt="CLOSED">
       <div class="offline-placeholder">💤</div>
-      <img class="main-thumb" src="https://static-cdn.jtvnw.net/jtv_user_pictures/wakanagi-profile_image-150x150.png" alt="若凪">
+      <img class="main-thumb" id="thumb-wakanagi" src="" alt="若凪">
     </div>
     <div class="title">Twitch: 若凪</div>
     <div class="status">準備中</div>
@@ -191,7 +179,7 @@
     <div class="img-container">
       <img src="closed_sign.png" class="closed-sign" alt="CLOSED">
       <div class="offline-placeholder">🍋</div>
-      <img class="main-thumb" src="https://static-cdn.jtvnw.net/jtv_user_pictures/yuzucha08-profile_image-150x150.png" alt="柚茶">
+      <img class="main-thumb" id="thumb-yuzucha08" src="" alt="柚茶">
     </div>
     <div class="title">Twitch: 柚茶</div>
     <div class="status">準備中</div>
@@ -201,7 +189,7 @@
     <div class="img-container">
       <img src="closed_sign.png" class="closed-sign" alt="CLOSED">
       <div class="offline-placeholder">🌹</div>
-      <img class="main-thumb" src="https://static-cdn.jtvnw.net/jtv_user_pictures/lily00_flca-profile_image-150x150.png" alt="Lily00">
+      <img class="main-thumb" id="thumb-lily00_flca" src="" alt="Lily00">
     </div>
     <div class="title">Twitch: Lily00</div>
     <div class="status">準備中</div>
@@ -211,7 +199,7 @@
     <div class="img-container">
       <img src="closed_sign.png" class="closed-sign" alt="CLOSED">
       <div class="offline-placeholder">🌙</div>
-      <img class="main-thumb" src="https://static-cdn.jtvnw.net/jtv_user_pictures/tourma_flca-profile_image-150x150.png" alt="とるま">
+      <img class="main-thumb" id="thumb-tourma_flca" src="" alt="とるま">
     </div>
     <div class="title">Twitch: とるま</div>
     <div class="status">準備中</div>
@@ -244,32 +232,12 @@ async function checkYouTube() {
       thumb.classList.add('show');
       status.innerHTML = '● LIVE配信中！';
       card.classList.add('live');
-      card.style.order = -3; // 最優先
+      card.style.order = -2; // 最優先
     } else { throw new Error(); }
   } catch {
     card.classList.remove('live');
     thumb.classList.remove('show');
     card.style.order = 10; 
-  }
-}
-
-async function checkTikTok() {
-  const card = document.getElementById('tt-card');
-  const status = document.getElementById('tt-status');
-  const thumb = document.getElementById('tt-thumb');
-  // TikTokは外部判定APIが不安定なため、ここではロジックの口だけ用意
-  // 配信中と判定された場合：
-  const isLive = false; // ここに判定ロジック
-  if(isLive) {
-    card.classList.add('live');
-    card.style.order = -2;
-    status.innerHTML = '● LIVE配信中！';
-    thumb.classList.add('show');
-  } else {
-    card.classList.remove('live');
-    card.style.order = 11;
-    status.innerHTML = '準備中';
-    thumb.classList.remove('show');
   }
 }
 
@@ -284,8 +252,12 @@ async function checkTwitch() {
       const text = await res.text();
       if (!text.toLowerCase().includes('offline')) {
         card.classList.add('live');
-        card.style.order = -1;
+        card.style.order = -1; // YouTubeの次
         statusDiv.innerHTML = `● 配信中: ${text}`;
+        
+        // Twitchのライブプレビュー画像URL（キャッシュ回避のため現在時刻を付与）
+        const thumbUrl = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel}-440x248.jpg?t=${new Date().getTime()}`;
+        img.src = thumbUrl;
         img.classList.add('show');
       } else { throw new Error(); }
     } catch {
@@ -293,18 +265,18 @@ async function checkTwitch() {
       card.style.order = 20;
       statusDiv.textContent = '準備中';
       img.classList.remove('show');
+      img.src = "";
     }
   }));
 }
 
-// パララックス
 const dustLayer = document.getElementById('dust-layer');
 window.addEventListener('scroll', () => {
   const moveY = window.pageYOffset * -0.35;
   dustLayer.style.transform = `translate3d(0, ${moveY}px, 0)`;
 });
 
-function refresh() { checkYouTube(); checkTikTok(); checkTwitch(); }
+function refresh() { checkYouTube(); checkTwitch(); }
 window.addEventListener('load', () => { refresh(); setInterval(refresh, 60000); });
 </script>
 </body>
