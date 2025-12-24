@@ -32,6 +32,8 @@
         radial-gradient(circle at 80% 70%, rgba(255, 0, 128, 0.2) 0%, transparent 50%), 
         radial-gradient(circle at center, #0a2a1a 0%, #051510 100%);
       background-attachment: fixed; color: #fff; overflow-x: hidden;
+      /* スマホタップ時の青い枠を防止 */
+      -webkit-tap-highlight-color: transparent;
     }
     body::after { 
       content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -60,14 +62,30 @@
       border: 4px solid rgba(255,255,255,0.6); background: rgba(0,0,0,0.2);
       z-index: 20; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       cursor: pointer; animation: floatHappy 3.5s ease-in-out infinite;
+      /* タップ時の青枠防止 */
+      -webkit-tap-highlight-color: transparent;
     }
-    .char-orb img { width: 100%; height: 100%; object-fit: cover; }
+    .char-orb img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .char-red { color: var(--glow-red); }
     .char-purple { color: var(--glow-purple); }
     .char-orange { color: var(--glow-orange); }
     .char-white { color: var(--glow-green); }
 
     .char-orb:hover { transform: scale(1.2) rotate(5deg) translateY(-15px); box-shadow: inset 0 0 20px rgba(0,0,0,0.4), 0 0 50px currentColor; border-color: #fff; z-index: 40; }
+    
+    /* タップした瞬間に揺れる */
+    .char-orb:active {
+      animation: bellShake 0.5s ease-in-out;
+    }
+    @keyframes bellShake {
+      0% { transform: rotate(0); }
+      20% { transform: rotate(15deg) scale(1.1); }
+      40% { transform: rotate(-12deg) scale(1.1); }
+      60% { transform: rotate(8deg) scale(1.1); }
+      80% { transform: rotate(-4deg) scale(1.1); }
+      100% { transform: rotate(0) scale(1.1); }
+    }
+
     @keyframes floatHappy { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-20px) rotate(2deg); } }
 
     .pos-red { top: 0; left: -80px; animation-delay: 0s; }
@@ -139,6 +157,17 @@
   <div id="overlay" onclick="closeImage()"><img id="expanded-img" src="" alt="拡大イラスト"></div>
 
   <audio id="bgm" src="https://raw.githubusercontent.com/flatcafe/flatcafe-live/main/bgm.mp3" loop preload="auto"></audio>
+
+  <audio class="bell-variant" src="Sleigh_Bells01-01(Reverb-Shake-Gentle).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-02(Reverb-Shake-Hard).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-03(Reverb-Knock-Gentle).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-04(Reverb-Knock-Hard).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-05(Dry-Shake-Gentle).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-06(Dry-Shake-Hard).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-07(Dry-Knock-Gentle).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-08(Dry-Knock-Hard).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-09(Dry-Long).mp3" preload="auto"></audio>
+  <audio class="bell-variant" src="Sleigh_Bells01-10(Dry-Noise).mp3" preload="auto"></audio>
   
   <div class="music-control" id="m-btn" onclick="toggleMusic(event)">
     <span id="music-icon">♪</span> <span id="music-status">BGM ON/OFF</span>
@@ -152,15 +181,15 @@
     </section>
     <section id="message-section">
       <div class="message-container">
-        <div class="char-orb char-red pos-red"><img src="char_red.png" alt="W"></div>
-        <div class="char-orb char-purple pos-purple"><img src="char_purple.png" alt="T"></div>
+        <div class="char-orb char-red pos-red" onclick="playRandomBell()"><img src="char_red.png" alt="W"></div>
+        <div class="char-orb char-purple pos-purple" onclick="playRandomBell()"><img src="char_purple.png" alt="T"></div>
         <div class="message-text">
           いつも「ふらっとcafe」を温かく応援してくださり、<br class="br-pc">本当にありがとうございます。<br>
           これからもゲーム実況と歌で、<br class="br-pc">みんなの日々を少しだけ幸せに彩っていけたら嬉しいです。<br>
           素敵なクリスマスを！
         </div>
-        <div class="char-orb char-orange pos-orange"><img src="char_orange.png" alt="N"></div>
-        <div class="char-orb char-white pos-white"><img src="char_white.png" alt="M"></div>
+        <div class="char-orb char-orange pos-orange" onclick="playRandomBell()"><img src="char_orange.png" alt="N"></div>
+        <div class="char-orb char-white pos-white" onclick="playRandomBell()"><img src="char_white.png" alt="M"></div>
       </div>
     </section>
     <section id="illust-section">
@@ -203,9 +232,20 @@
     }
 
     const bgm = document.getElementById('bgm');
+    const bellSounds = document.querySelectorAll('.bell-variant');
     const musicStatus = document.getElementById('music-status');
     const musicIcon = document.getElementById('music-icon');
     let hasInteracted = false;
+
+    // ランダムにベルを鳴らす関数
+    function playRandomBell() {
+      if (bellSounds.length > 0) {
+        const randomIndex = Math.floor(Math.random() * bellSounds.length);
+        const selectedBell = bellSounds[randomIndex];
+        selectedBell.currentTime = 0; // 再生位置をリセット
+        selectedBell.play();
+      }
+    }
 
     function handleFirstInteraction() {
       if (!hasInteracted) {
