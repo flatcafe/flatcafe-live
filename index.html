@@ -13,12 +13,15 @@
       --bg-lily: #ffebee; --text-lily: #b71c1c;
       --bg-toru: #f3e5f5; --text-toru: #4a148c;
     }
+
     body {
       margin: 0; font-family: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
       background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1950&q=80') no-repeat center center fixed;
       background-size: cover; color: #333; min-height: 100vh; overflow-x: hidden;
     }
+
     body::before { content: ""; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.4); z-index: -2; }
+
     .dust-layer {
       position: fixed; top: -15%; left: -10%; width: 120%; height: 130%;
       pointer-events: none; z-index: 9999; opacity: 0.75; filter: blur(1.5px);
@@ -29,16 +32,20 @@
       background-size: 100px 100px, 180px 180px, 240px 240px;
       background-position: 0 0, 50px 70px, 110px 180px; will-change: transform;
     }
+
     h2 {
       text-align: center; margin: 60px 0; font-size: clamp(1.1rem, 5.8vw, 2.5rem);
       color: #fff; text-shadow: 0 0 7px #fff, 0 0 15px #ff0055, 0 0 30px #ff0055;
       position: relative; z-index: 1;
     }
+
     .container {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 20px 60px;
       position: relative; z-index: 1;
     }
+
+    /* カード基本設定 */
     .card {
       border-radius: 18px; box-shadow: 0 12px 24px rgba(0,0,0,0.2);
       padding: 16px; text-align: center; position: relative;
@@ -47,81 +54,128 @@
       align-items: center; border: 2px solid transparent; background: #fff;
       order: 100;
     }
-    .card.live { border-color: #ff0000; box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
-    .card:hover { transform: translateY(-6px); }
+
+    /* 配信中の動き（パルス） */
+    .card.live {
+      border-color: #ff0000;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+      animation: card-pulse 2s infinite ease-in-out;
+    }
+    @keyframes card-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    .card:hover { transform: translateY(-6px) !important; z-index: 5; }
+
     .img-container {
       width: 100%; aspect-ratio: 16 / 9; background: #e0e0e0;
       border-radius: 12px; margin-bottom: 14px; overflow: hidden;
       position: relative; display: flex; align-items: center; justify-content: center;
     }
+
     .card img.main-thumb {
       width: 100%; height: 100%; object-fit: cover;
       display: block; transition: opacity 0.5s; opacity: 0; z-index: 2;
     }
     .card img.main-thumb.show { opacity: 1; }
-    .closed-sign {
-      position: absolute; top: 10px; right: 10px; width: 80px;
+
+    /* 札（OPEN / CLOSED）の共通設定 */
+    .status-sign {
+      position: absolute; top: 10px; right: 10px; width: 85px;
       z-index: 10; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-      display: block;
     }
+
+    /* 閉店札 */
+    .closed-sign { display: block; }
     .card.live .closed-sign { display: none; }
+
+    /* 開店札（ゆらゆら動く） */
+    .open-sign {
+      display: none;
+      transform-origin: top center;
+      animation: swing 3s infinite ease-in-out;
+    }
+    .card.live .open-sign { display: block; }
+
+    @keyframes swing {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
     .offline-placeholder {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background-color: #d7ccc8; display: flex; align-items: center; justify-content: center;
       font-size: 2.5rem; z-index: 1;
     }
+
     .title { font-size: 1.15rem; font-weight: 700; margin: 6px 0; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .status { font-size: 0.95rem; opacity: 0.95; font-weight: 500; }
+
+    /* 各カラー */
     .card-yt { background: var(--bg-yt); color: var(--text-yt); }
     .card-waka { background: var(--bg-waka); color: var(--text-waka); }
     .card-yuzu { background: var(--bg-yuzu); color: var(--text-yuzu); }
     .card-lily { background: var(--bg-lily); color: var(--text-lily); }
     .card-toru { background: var(--bg-toru); color: var(--text-toru); }
+
+    @media(max-width: 480px) { .container { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
+
 <div class="dust-layer" id="dust-layer"></div>
 <h2>ふらっとcafe ライブ配信ポータル</h2>
+
 <div class="container" id="portal-container">
   <a href="https://www.youtube.com/@flatcafe_games/live" target="_blank" class="card card-yt" id="yt-card">
     <div class="img-container">
-      <img src="closed_sign.png" class="closed-sign" alt="CLOSED" onerror="this.style.display='none'">
+      <img src="open_sign.png" class="status-sign open-sign" alt="OPEN">
+      <img src="closed_sign.png" class="status-sign closed-sign" alt="CLOSED" onerror="this.style.display='none'">
       <div class="offline-placeholder">☕</div>
       <img id="yt-thumb" class="main-thumb" src="" alt="YouTube">
     </div>
     <div class="title">YouTube: ふらcafe</div>
     <div class="status" id="yt-status">準備中</div>
   </a>
+
   <a href="https://www.twitch.tv/wakanagi" target="_blank" class="card card-waka" data-channel="wakanagi">
     <div class="img-container">
-      <img src="closed_sign.png" class="closed-sign" alt="CLOSED" onerror="this.style.display='none'">
+      <img src="open_sign.png" class="status-sign open-sign" alt="OPEN">
+      <img src="closed_sign.png" class="status-sign closed-sign" alt="CLOSED" onerror="this.style.display='none'">
       <div class="offline-placeholder">💤</div>
       <img class="main-thumb" src="" alt="若凪">
     </div>
     <div class="title">Twitch: 若凪</div>
     <div class="status">準備中</div>
   </a>
+
   <a href="https://www.twitch.tv/yuzucha08" target="_blank" class="card card-yuzu" data-channel="yuzucha08">
     <div class="img-container">
-      <img src="closed_sign.png" class="closed-sign" alt="CLOSED" onerror="this.style.display='none'">
+      <img src="open_sign.png" class="status-sign open-sign" alt="OPEN">
+      <img src="closed_sign.png" class="status-sign closed-sign" alt="CLOSED" onerror="this.style.display='none'">
       <div class="offline-placeholder">🍋</div>
       <img class="main-thumb" src="" alt="柚茶">
     </div>
     <div class="title">Twitch: 柚茶</div>
     <div class="status">準備中</div>
   </a>
+
   <a href="https://www.twitch.tv/lily00_flca" target="_blank" class="card card-lily" data-channel="lily00_flca">
     <div class="img-container">
-      <img src="closed_sign.png" class="closed-sign" alt="CLOSED" onerror="this.style.display='none'">
+      <img src="open_sign.png" class="status-sign open-sign" alt="OPEN">
+      <img src="closed_sign.png" class="status-sign closed-sign" alt="CLOSED" onerror="this.style.display='none'">
       <div class="offline-placeholder">🌹</div>
       <img class="main-thumb" src="" alt="Lily00">
     </div>
     <div class="title">Twitch: Lily00</div>
     <div class="status">準備中</div>
   </a>
+
   <a href="https://www.twitch.tv/tourma_flca" target="_blank" class="card card-toru" data-channel="tourma_flca">
     <div class="img-container">
-      <img src="closed_sign.png" class="closed-sign" alt="CLOSED" onerror="this.style.display='none'">
+      <img src="open_sign.png" class="status-sign open-sign" alt="OPEN">
+      <img src="closed_sign.png" class="status-sign closed-sign" alt="CLOSED" onerror="this.style.display='none'">
       <div class="offline-placeholder">🌙</div>
       <img class="main-thumb" src="" alt="とるま">
     </div>
@@ -135,7 +189,6 @@ const YT_API_KEY = 'AIzaSyA6e6pIM3e85U_S6Hu3gIpxwsx0_E37vIE';
 const YT_CHANNEL_ID = 'UCAsCx41YE4mEIBCIAGOzFfA';
 
 async function fetchWithNoCache(url) {
-  // URLにタイムスタンプを付与してキャッシュを強制的に回避
   const noCacheUrl = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), 5000);
