@@ -26,7 +26,7 @@
     .snowflake { position: absolute; top: -10%; background: #fff; border-radius: 50%; filter: blur(1px); animation: fall linear infinite; }
     @keyframes fall { to { transform: translateY(110vh); } }
 
-    /* --- 装飾レイヤー：オーナメントと星のみ --- */
+    /* --- 装飾レイヤー --- */
     .parallax-layer { position: fixed; top: -20%; left: -10%; width: 120%; height: 150%; pointer-events: none; will-change: transform; }
     #layer-bg-decor { z-index: 5; opacity: 0.8; }
 
@@ -38,7 +38,7 @@
     .star { position: absolute; background: #fff; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); box-shadow: 0 0 15px #fff; animation: twinkle 3s infinite ease-in-out; }
     @keyframes twinkle { 0%, 100% { opacity: 0.4; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
 
-    /* --- キャラクターオーナメント（ホバーエフェクト・アニメ追加） --- */
+    /* --- キャラクターオーナメント --- */
     .char-orb {
       position: absolute; width: 160px; height: 160px; border-radius: 50%; overflow: hidden;
       box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 20px currentColor;
@@ -65,11 +65,11 @@
       50% { transform: translateY(-15px); }
     }
 
-    /* アニメーションのタイミングをずらす */
-    .pos-red { top: 0; left: -50px; animation-delay: 0s; }
-    .pos-purple { top: 20%; right: -50px; animation-delay: 0.5s; }
-    .pos-orange { bottom: 0; left: 0; animation-delay: 1s; }
-    .pos-white { bottom: 10%; right: 0; animation-delay: 1.5s; }
+    /* 位置指定 */
+    .pos-red { top: 0; left: -80px; animation-delay: 0s; }
+    .pos-purple { top: 15%; right: -80px; animation-delay: 0.5s; }
+    .pos-orange { bottom: 0; left: -20px; animation-delay: 1s; }
+    .pos-white { bottom: 8%; right: -20px; animation-delay: 1.5s; }
 
     /* --- セクションエリア --- */
     section { width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; position: relative; z-index: 10; box-sizing: border-box; padding: 0 20px; }
@@ -90,13 +90,16 @@
       position: relative;
       max-width: 800px;
       width: 100%;
-      padding: 150px 0;
+      padding: 180px 0;
     }
+    /* メッセージのテキスト調整：単語の区切りを保護 */
     .message-text { 
-      max-width: 600px; margin: 0 auto;
-      font-size: 1.15rem; line-height: 2.4; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.95);
+      max-width: 650px; margin: 0 auto;
+      font-size: 1.15rem; line-height: 2.6; letter-spacing: 0.05em; color: rgba(255, 255, 255, 0.95);
       position: relative; z-index: 30;
+      word-break: keep-all; overflow-wrap: anywhere;
     }
+    .br-pc { display: block; }
 
     #illust-section { height: 100vh; }
     .illust-frame { width: 100%; max-width: 850px; aspect-ratio: 16 / 9; border: 2px solid rgba(212, 175, 55, 0.4); background: #000; box-shadow: 0 25px 70px rgba(0,0,0,0.9), 0 0 50px rgba(212, 175, 55, 0.25); border-radius: 4px; overflow: hidden; cursor: zoom-in; transition: transform 0.4s ease; }
@@ -108,7 +111,7 @@
     #overlay img { max-width: 95%; max-height: 95%; animation: zoomIn 0.3s ease; }
     @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* --- BGMコントロールUI --- */
+    /* BGMコントロール */
     .music-control {
       position: fixed; bottom: 20px; right: 20px; z-index: 10000;
       background: rgba(10, 42, 26, 0.8); border: 1px solid var(--text-gold);
@@ -118,16 +121,17 @@
     }
     .music-control:hover { background: var(--text-gold); color: #0a2a1a; }
 
-    /* --- スマホ表示の最適化 --- */
+    /* スマホ表示の最適化 */
     @media (max-width: 768px) {
-      #message-section { padding: 60px 10px; }
-      .message-container { padding: 100px 0; }
-      .char-orb { width: 100px; height: 100px; }
-      .pos-red { top: -20px; left: 0; }
-      .pos-purple { top: 10%; right: 0; }
-      .pos-orange { bottom: -20px; left: 10%; }
-      .pos-white { bottom: 5%; right: 10%; }
-      .message-text { font-size: 1rem; line-height: 2.0; }
+      .br-pc { display: none; }
+      #message-section { padding: 40px 10px; }
+      .message-container { padding: 120px 0; }
+      .char-orb { width: 110px; height: 110px; }
+      .pos-red { top: -40px; left: 10px; }
+      .pos-purple { top: 5%; right: 10px; }
+      .pos-orange { bottom: -40px; left: 10px; }
+      .pos-white { bottom: 0%; right: 10px; }
+      .message-text { font-size: 1rem; line-height: 2.2; padding: 0 15px; }
     }
   </style>
 </head>
@@ -165,8 +169,8 @@
         </div>
 
         <div class="message-text">
-          いつも「ふらっとcafe」を温かく応援してくださり、本当にありがとうございます。<br>
-          これからもゲーム実況と歌で、みんなの日々を少しだけ幸せに彩っていけたら幸せです。<br>
+          いつも「ふらっとcafe」を温かく応援してくださり、<br class="br-pc">本当にありがとうございます。<br>
+          これからもゲーム実況と歌で、<br class="br-pc">みんなの日々を少しだけ幸せに彩っていけたら幸せです。<br>
           素敵なクリスマスを、あなたに。
         </div>
 
@@ -188,7 +192,6 @@
   </main>
 
   <script>
-    // 雪の演出
     const snowBox = document.getElementById('snow-box');
     for (let i = 0; i < 70; i++) {
       const s = document.createElement('div'); s.className = 'snowflake';
@@ -196,25 +199,22 @@
       s.style.left = Math.random() * 100 + '%'; s.style.animationDuration = (Math.random() * 8 + 4) + 's'; s.style.animationDelay = (Math.random() * 5) + 's'; s.style.opacity = Math.random() * 0.7 + 0.3; snowBox.appendChild(s);
     }
 
-    // パララックス
     const bgDecor = document.getElementById('layer-bg-decor');
     window.addEventListener('scroll', () => {
       const y = window.pageYOffset;
       requestAnimationFrame(() => { bgDecor.style.transform = `translate3d(0, ${y * -0.4}px, 0)`; });
     });
 
-    // 画像拡大
     function expandImage() { const targetSrc = document.getElementById('target-img').src; const overlay = document.getElementById('overlay'); const expandedImg = document.getElementById('expanded-img'); expandedImg.src = targetSrc; overlay.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
     function closeImage() { const overlay = document.getElementById('overlay'); overlay.style.display = 'none'; document.body.style.overflow = 'auto'; }
 
-    // BGM制御
     const bgm = document.getElementById('bgm');
     const musicStatus = document.getElementById('music-status');
     const musicIcon = document.getElementById('music-icon');
 
     function toggleMusic() {
       if (bgm.paused) {
-        bgm.play().catch(e => console.error("再生に失敗しました:", e));
+        bgm.play().catch(e => console.error("再生失敗:", e));
         musicStatus.innerText = "BGM ON";
         musicIcon.style.animation = "twinkle 1s infinite";
       } else {
