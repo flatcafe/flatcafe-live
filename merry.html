@@ -128,7 +128,8 @@
 
   <div id="overlay" onclick="closeImage()"><img id="expanded-img" src="" alt="拡大イラスト"></div>
 
-  <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+  <audio id="bgm" src="https://raw.githubusercontent.com/flatcafe/flatcafe-live/main/bgm.mp3" loop preload="auto"></audio>
+  
   <div class="music-control" id="m-btn" onclick="toggleMusic(event)">
     <span id="music-icon">♪</span> <span id="music-status">BGM ON/OFF</span>
   </div>
@@ -191,7 +192,6 @@
       document.body.style.overflow = 'auto'; 
     }
 
-    // BGM再生ロジック
     const bgm = document.getElementById('bgm');
     const musicStatus = document.getElementById('music-status');
     const musicIcon = document.getElementById('music-icon');
@@ -202,13 +202,13 @@
         bgm.play().then(() => {
           musicStatus.innerText = "BGM ON";
           musicIcon.style.animation = "twinkleHappy 1s infinite";
-        }).catch(e => console.log("初期再生待機中..."));
+        }).catch(e => console.log("再開待機中..."));
         hasInteracted = true;
       }
     }
 
     function toggleMusic(event) {
-      event.stopPropagation(); // bodyのclickイベントを防止
+      event.stopPropagation();
       if (bgm.paused) {
         bgm.play();
         musicStatus.innerText = "BGM ON";
