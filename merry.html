@@ -60,7 +60,7 @@
       position: absolute; width: 160px; height: 160px; border-radius: 50%; overflow: hidden;
       box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 25px currentColor;
       border: 4px solid rgba(255,255,255,0.6); background: rgba(0,0,0,0.2);
-      z-index: 20; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 20; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s, border-color 0.4s;
       cursor: pointer; 
       animation: floatHappy 3.5s ease-in-out infinite;
       -webkit-tap-highlight-color: transparent;
@@ -73,17 +73,18 @@
 
     .char-orb:hover { transform: scale(1.2) rotate(5deg) translateY(-15px); box-shadow: inset 0 0 20px rgba(0,0,0,0.4), 0 0 50px currentColor; border-color: #fff; z-index: 40; }
     
-    /* 修正：JavaScriptでクラスを付与してアニメーションさせる */
-    .play-bell {
+    /* 修正：オーブ限定で揺らし、他の要素への干渉を防ぐ */
+    .char-orb.play-bell {
       animation: bellShake 0.5s ease-in-out !important;
     }
+    
     @keyframes bellShake {
-      0% { transform: rotate(0); }
-      20% { transform: rotate(15deg) scale(1.1); }
-      40% { transform: rotate(-12deg) scale(1.1); }
-      60% { transform: rotate(8deg) scale(1.1); }
-      80% { transform: rotate(-4deg) scale(1.1); }
-      100% { transform: rotate(0) scale(1.1); }
+      0% { transform: scale(1.1) rotate(0); }
+      20% { transform: scale(1.1) rotate(15deg); }
+      40% { transform: scale(1.1) rotate(-12deg); }
+      60% { transform: scale(1.1) rotate(8deg); }
+      80% { transform: scale(1.1) rotate(-4deg); }
+      100% { transform: scale(1.1) rotate(0); }
     }
 
     @keyframes floatHappy { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-20px) rotate(2deg); } }
@@ -229,20 +230,16 @@
 
     bellSound.volume = 0.8;
 
-    // タップ時にアニメーションと音声をトリガー
     function triggerBell(element) {
-      // 音声再生
       if (bellSound) {
         bellSound.currentTime = 0; 
         bellSound.play();
       }
       
-      // クラスを付与してアニメーション完結させる
       element.classList.remove('play-bell');
-      void element.offsetWidth; // リフローを強制して再アニメーション可能にする
+      void element.offsetWidth; 
       element.classList.add('play-bell');
       
-      // アニメーション時間(500ms)後にクラスを外す
       setTimeout(() => {
         element.classList.remove('play-bell');
       }, 500);
